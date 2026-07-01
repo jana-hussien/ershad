@@ -21,7 +21,8 @@ plt.rcParams.update({
     "axes.edgecolor": "black",
 })
 
-OUT_DIR = Path(__file__).resolve().parent
+OUT_DIR = Path(__file__).resolve().parent / "paper_figures"
+OUT_DIR.mkdir(parents=True, exist_ok=True)
 GROUPS = ["left", "middle", "right", "overall"]
 GROUP_LABELS = ["Left", "Middle", "Right", "Overall"]
 CLASS_KEYS = [0, 1, 2]
