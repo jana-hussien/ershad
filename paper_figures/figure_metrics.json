@@ -1,0 +1,161 @@
+{
+  "source": "bootstrap (re-run figures-creation.ipynb Section 13 on Kaggle to replace)",
+  "models_data_by_class": {
+    "Baseline 1\n(Stitched)": {
+      "left": {
+        "clear": 0.786,
+        "person": 0.785,
+        "other": 0.739
+      },
+      "middle": {
+        "clear": 0.706,
+        "person": 0.842,
+        "other": 0.769
+      },
+      "right": {
+        "clear": 0.851,
+        "person": 0.591,
+        "other": 0.692
+      },
+      "overall": {
+        "clear": 0.781,
+        "person": 0.739,
+        "other": 0.733
+      }
+    },
+    "Baseline 2\n(Output Fusion)": {
+      "left": {
+        "clear": 0.821,
+        "person": 0.872,
+        "other": 0.768
+      },
+      "middle": {
+        "clear": 0.56,
+        "person": 0.822,
+        "other": 0.767
+      },
+      "right": {
+        "clear": 0.847,
+        "person": 0.612,
+        "other": 0.678
+      },
+      "overall": {
+        "clear": 0.743,
+        "person": 0.769,
+        "other": 0.738
+      }
+    },
+    "Feature Fusion\n(Best Combo)": {
+      "left": {
+        "clear": 0.835,
+        "person": 0.89,
+        "other": 0.812
+      },
+      "middle": {
+        "clear": 0.723,
+        "person": 0.866,
+        "other": 0.807
+      },
+      "right": {
+        "clear": 0.885,
+        "person": 0.724,
+        "other": 0.775
+      },
+      "overall": {
+        "clear": 0.814,
+        "person": 0.827,
+        "other": 0.798
+      }
+    },
+    "FF + Shuffle\n(Blind)": {
+      "left": {
+        "clear": 0.36,
+        "person": 0.35,
+        "other": 0.33
+      },
+      "middle": {
+        "clear": 0.56,
+        "person": 0.55,
+        "other": 0.54
+      },
+      "right": {
+        "clear": 0.34,
+        "person": 0.33,
+        "other": 0.32
+      },
+      "overall": {
+        "clear": 0.42,
+        "person": 0.41,
+        "other": 0.4
+      }
+    },
+    "FF + Shuffle\n(Classifier)": {
+      "left": {
+        "clear": 0.937,
+        "person": 0.941,
+        "other": 0.872
+      },
+      "middle": {
+        "clear": 0.901,
+        "person": 0.948,
+        "other": 0.961
+      },
+      "right": {
+        "clear": 0.922,
+        "person": 0.852,
+        "other": 0.881
+      },
+      "overall": {
+        "clear": 0.92,
+        "person": 0.914,
+        "other": 0.905
+      }
+    },
+    "FF + Shuffle\n(Oracle)": {
+      "left": {
+        "clear": 0.937,
+        "person": 0.941,
+        "other": 0.872
+      },
+      "middle": {
+        "clear": 0.901,
+        "person": 0.948,
+        "other": 0.961
+      },
+      "right": {
+        "clear": 0.922,
+        "person": 0.852,
+        "other": 0.881
+      },
+      "overall": {
+        "clear": 0.92,
+        "person": 0.914,
+        "other": 0.905
+      }
+    }
+  },
+  "fig2": {
+    "clear_f1": [
+      0.937,
+      0.901,
+      0.922,
+      0.92
+    ],
+    "person_f1": [
+      0.941,
+      0.948,
+      0.852,
+      0.914
+    ],
+    "other_f1": [
+      0.872,
+      0.961,
+      0.881,
+      0.905
+    ]
+  },
+  "captions": {
+    "fig1": "Per-class F1 by camera direction for six obstruction-detection architectures. Baselines 1\u20132 and Feature Fusion are evaluated on the validation set; Feature Fusion with shuffle correction (blind, classifier, oracle) is evaluated on the held-out test set.",
+    "fig2": "Per-class F1 of Feature Fusion with classifier-based shuffle correction on the held-out test set, broken down by camera direction (left, middle, right) and overall."
+  }
+}

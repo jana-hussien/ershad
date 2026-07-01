@@ -1,10 +1,12 @@
-"""Regenerate fig1/fig2 from cached values (no full notebook run needed)."""
+"""Regenerate fig1/fig2 from metrics exported by figures-creation.ipynb."""
 from pathlib import Path
 
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
+
+from paper_figure_metrics import load_figure_metrics
 
 # Keep DareDevil paper font (Times New Roman serif)
 plt.rcParams.update({
@@ -21,15 +23,16 @@ plt.rcParams.update({
     "axes.edgecolor": "black",
 })
 
-OUT_DIR = Path(__file__).resolve().parent / "paper_figures"
 REPO_ROOT = Path(__file__).resolve().parent
+OUT_DIR = REPO_ROOT / "paper_figures"
+METRICS_PATH = OUT_DIR / "figure_metrics.json"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
+
 GROUPS = ["left", "middle", "right", "overall"]
 GROUP_LABELS = ["Left", "Middle", "Right", "Overall"]
 CLASS_KEYS = [0, 1, 2]
 CLASS_PANEL_LABELS = ["Clear", "Person", "Other Object"]
 
-# Shared visual constants (both figures)
 FIG_H = 2.75
 BAR_KW = dict(edgecolor="black", linewidth=1.0)
 LABEL_FMT = "{:.2f}"
@@ -38,71 +41,21 @@ LABEL_PAD = 0.018
 LABEL_COLLISION_DY = 0.028
 YLIM_HEADROOM = 0.03
 
-FIG1_CAPTION = (
-    "Per-class F1 by camera direction for six obstruction-detection architectures. "
-    "Baselines 1–2 and Feature Fusion are evaluated on the validation set; "
-    "Feature Fusion with shuffle correction (blind, classifier, oracle) is evaluated "
-    "on the held-out test set."
-)
-FIG2_CAPTION = (
-    "Per-class F1 of Feature Fusion with classifier-based shuffle correction on the "
-    "held-out test set, broken down by camera direction (left, middle, right) and overall."
-)
-
-
-def _mk(c0, c1, c2):
-    return {0: c0, 1: c1, 2: c2}
-
-
-models_data_by_class = {
-    "Baseline 1\n(Stitched)": {
-        "left": _mk(0.786, 0.785, 0.739),
-        "middle": _mk(0.706, 0.842, 0.769),
-        "right": _mk(0.851, 0.591, 0.692),
-        "overall": _mk(0.781, 0.739, 0.733),
-    },
-    "Baseline 2\n(Output Fusion)": {
-        "left": _mk(0.821, 0.872, 0.768),
-        "middle": _mk(0.560, 0.822, 0.767),
-        "right": _mk(0.847, 0.612, 0.678),
-        "overall": _mk(0.743, 0.769, 0.738),
-    },
-    "Feature Fusion\n(Best Combo)": {
-        "left": _mk(0.835, 0.890, 0.812),
-        "middle": _mk(0.723, 0.866, 0.807),
-        "right": _mk(0.885, 0.724, 0.775),
-        "overall": _mk(0.814, 0.827, 0.798),
-    },
-    "FF + Shuffle\n(Blind)": {
-        "left": _mk(0.36, 0.35, 0.33),
-        "middle": _mk(0.56, 0.55, 0.54),
-        "right": _mk(0.34, 0.33, 0.32),
-        "overall": _mk(0.42, 0.41, 0.40),
-    },
-    "FF + Shuffle\n(Classifier)": {
-        "left": _mk(0.937, 0.941, 0.872),
-        "middle": _mk(0.901, 0.948, 0.961),
-        "right": _mk(0.922, 0.852, 0.881),
-        "overall": _mk(0.920, 0.914, 0.905),
-    },
-    "FF + Shuffle\n(Oracle)": {
-        "left": _mk(0.937, 0.941, 0.872),
-        "middle": _mk(0.901, 0.948, 0.961),
-        "right": _mk(0.922, 0.852, 0.881),
-        "overall": _mk(0.920, 0.914, 0.905),
-    },
-}
 COLOR_SHADES = ["#4477AA", "#66CCEE", "#228833", "#CCBB44", "#EE6677", "#AA3377"]
 COLOR_HATCHES = ["", "///", "...", "xxx", "---", "|||"]
-
-clear_f1 = [0.937, 0.901, 0.922, 0.920]
-person_f1 = [0.941, 0.948, 0.852, 0.914]
-other_f1 = [0.872, 0.961, 0.881, 0.905]
 COLOR_CLASS = {
     "Clear": ("#4477AA", ""),
     "Person": ("#EE6677", "///"),
     "Other Object": ("#228833", "..."),
 }
+
+_metrics = load_figure_metrics(METRICS_PATH)
+models_data_by_class = _metrics["models_data_by_class"]
+clear_f1 = _metrics["clear_f1"]
+person_f1 = _metrics["person_f1"]
+other_f1 = _metrics["other_f1"]
+FIG1_CAPTION = _metrics["fig1_caption"]
+FIG2_CAPTION = _metrics["fig2_caption"]
 
 
 def _style_axes(ax, ylabel=None):
@@ -128,7 +81,6 @@ def _group_separators(ax, n_groups):
 
 
 def _add_bar_top_labels(ax, bar_groups, val_groups):
-    """Center each value above its bar; nudge only when labels would collide."""
     bar_w = bar_groups[0][0].get_width()
     max_label_y = 0.0
 
@@ -170,7 +122,6 @@ def _finalize_figure(fig, bottom=0.28):
 
 
 def _save_fig(name):
-    """Write to paper_figures/ and a copy at repo root."""
     for directory in (OUT_DIR, REPO_ROOT):
         path = directory / name
         plt.savefig(path, dpi=200, bbox_inches="tight", pad_inches=0.04, facecolor="white")
@@ -238,6 +189,7 @@ def draw_fig2():
 
 
 if __name__ == "__main__":
+    print(f"loaded metrics from {_metrics['source']} ({METRICS_PATH})")
     draw_fig1()
     draw_fig2()
     print("\n--- Figure captions (for paper, not rendered in plots) ---")
