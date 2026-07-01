@@ -2,23 +2,28 @@
 \citation{gao2025daredevil}
 \citation{thermal_gyro_odom}
 \citation{naser2022calibration}
+\citation{kim2024traversability}
 \@writefile{toc}{\contentsline {section}{\numberline {I}Introduction}{1}{}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {II}Related Work}{1}{}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-A}}Privacy-Preserving and Ultra-Low-Resolution Thermal Sensing}{1}{}\protected@file@percent }
-\citation{kim2024traversability}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-B}}Automatic Label Generation for Traversability}{1}{}\protected@file@percent }
 \citation{liu2025citywalker}
 \citation{qi2021msad}
 \@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces End-to-end pipeline, from multi-view thermal data collection and RGB-based automatic labeling to the family of thermal fusion models evaluated in this paper. The RGB camera is present only during data collection; at inference the models use the three ultra-low-resolution thermal tiles alone.}}{2}{}\protected@file@percent }
 \newlabel{fig:pipeline}{{1}{2}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-B}}Automatic Label Generation for Traversability}{2}{}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-C}}Large-Scale and Web-Sourced Navigation Learning}{2}{}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-D}}Multi-View Sensor Fusion and Placement Robustness}{2}{}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {III}Methodology}{2}{}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-A}}Problem Formulation}{2}{}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-B}}RGB-Based Automatic Label Generation}{2}{}\protected@file@percent }
 \newlabel{sec:labels}{{\mbox  {III-B}}{2}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-C}}Thermal Fusion Architectures}{3}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {\mbox  {III-C}0a}Model 1: Stitched Panorama (pixel-level fusion)}{3}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-C}}Thermal Fusion Architectures}{2}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {\mbox  {III-C}0a}Model 1: Stitched Panorama (pixel-level fusion)}{2}{}\protected@file@percent }
+\bibcite{gao2025daredevil}{1}
+\bibcite{kim2024traversability}{2}
+\bibcite{liu2025citywalker}{3}
+\bibcite{naser2022calibration}{4}
+\bibcite{thermal_gyro_odom}{5}
 \@writefile{toc}{\contentsline {paragraph}{\numberline {\mbox  {III-C}0b}Model 2: Output Fusion (decision-level fusion)}{3}{}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{\numberline {\mbox  {III-C}0c}Model 3: Feature Fusion}{3}{}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{\numberline {\mbox  {III-C}0d}Model 4: Feature Fusion with camera-identity correction}{3}{}\protected@file@percent }
@@ -29,16 +34,11 @@
 \@writefile{toc}{\contentsline {section}{\numberline {V}Results}{3}{}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-A}}Navigability Estimation Performance}{3}{}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-B}}Fusion Strategy Analysis}{3}{}\protected@file@percent }
-\bibcite{gao2025daredevil}{1}
-\bibcite{kim2024traversability}{2}
-\bibcite{liu2025citywalker}{3}
-\bibcite{naser2022calibration}{4}
-\bibcite{thermal_gyro_odom}{5}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-C}}Camera Arrangement Robustness}{3}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{References}{3}{}\protected@file@percent }
 \bibcite{qi2021msad}{6}
 \@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Per-class $F_1$ by camera direction for the obstruction-detection architectures. Baselines and Feature Fusion are evaluated on the validation set; Feature Fusion with shuffle correction (blind, classifier, oracle) is evaluated on the held-out test set.}}{4}{}\protected@file@percent }
 \newlabel{fig:arch_f1}{{2}{4}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-C}}Camera Arrangement Robustness}{4}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{References}{4}{}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Per-class $F_1$ of Feature Fusion with classifier-based shuffle correction on the held-out test set, broken down by camera direction (left, middle, right) and overall.}}{4}{}\protected@file@percent }
 \newlabel{fig:ff_shuffle}{{3}{4}{}{}{}}
 \gdef \@abspage@last{4}

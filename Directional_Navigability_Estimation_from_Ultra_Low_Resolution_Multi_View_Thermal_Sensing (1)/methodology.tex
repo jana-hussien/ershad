@@ -3,38 +3,33 @@
 
 \subsection{Problem Formulation}
 
-At each timestep the wearable rig produces three ultra-low-resolution thermal
-tiles $\{x_{\text{L}}, x_{\text{M}}, x_{\text{R}}\}$, one per active camera, each
-of size $32\times24$. The task is to predict, for every direction
-$d \in \{\text{left}, \text{middle}, \text{right}\}$, a navigability state
-$y_d \in \{\texttt{no\_object}, \texttt{person}, \texttt{other\_object}\}$,
-where \texttt{no\_object} denotes a clear (walkable) direction and the remaining
-two states denote an obstruction, separated by whether the obstruction is a
-person or another object. A model is thus a map
+At each timestep the rig outputs three thermal tiles
+$\{x_{\text{L}}, x_{\text{M}}, x_{\text{R}}\}$, one from each active camera,
+each $32\times24$. For each direction
+$d \in \{\text{left}, \text{middle}, \text{right}\}$ the model predicts
+$y_d \in \{\texttt{no\_object}, \texttt{person}, \texttt{other\_object}\}$.
+The class \texttt{no\_object} means the direction is clear; the other two mark an
+obstruction, split by whether it is a person or another object. At inference
+the model reads only the thermal tiles:
 $f: (x_{\text{L}}, x_{\text{M}}, x_{\text{R}}) \mapsto (y_{\text{L}},
-y_{\text{M}}, y_{\text{R}})$ that operates on the raw thermal tiles alone at
-inference time. Supervision comes from a paired high-resolution RGB camera used
-only during data collection (Section~\ref{sec:labels}), and each direction
-carries a validity mask so that timesteps without a usable RGB label do not
-contribute to the loss.
+y_{\text{M}}, y_{\text{R}})$.
+Training labels come from the paired RGB stream (Section~\ref{sec:labels}). A
+per-direction validity mask drops timesteps where RGB labeling fails.
 
 \subsection{RGB-Based Automatic Label Generation}
 \label{sec:labels}
 
-Ground-truth navigability labels are generated automatically from the paired RGB
-stream, eliminating manual annotation. For each synchronized RGB frame we run a
-pretrained YOLOv8 detector; detections of the COCO \texttt{person} class are
-mapped to the \texttt{person} state and all other detected object classes to
-\texttt{other\_object}. To assign detections to directions, each detection's
-image-space bounding box is tested for overlap against the horizontal footprint
-of each active thermal camera's field of view, recovered from the RGB-to-thermal
-homographies estimated once at rig-build time. A direction is labeled
-\texttt{person} if a person detection overlaps its footprint, \texttt{other\_object}
-if only a non-person detection overlaps, and \texttt{no\_object} (clear)
-otherwise. Frames without a reliable homography-derived footprint are marked
-invalid for that direction and masked out of training. This yields per-direction,
-three-class labels aligned to the thermal tiles without any pixel-level
-correspondence between the RGB and thermal sensors at inference time.
+Labels are generated from synchronized RGB frames with no manual step. Each
+frame is passed through a pretrained YOLOv8 detector. COCO class
+\texttt{person} maps to \texttt{person}; every other detection maps to
+\texttt{other\_object}. To assign a detection to a direction, its bounding box
+is checked for overlap with the image footprint of each thermal camera, using
+RGB-to-thermal homographies fixed when the rig is built. If a person box
+overlaps a camera footprint, that direction is \texttt{person}. If only a
+non-person box overlaps, it is \texttt{other\_object}. With no overlap, it is
+\texttt{no\_object}. Directions without a valid footprint are masked out. The
+thermal model never sees RGB at inference and is not trained on aligned RGB
+pixels.
 
 \subsection{Thermal Fusion Architectures}
 

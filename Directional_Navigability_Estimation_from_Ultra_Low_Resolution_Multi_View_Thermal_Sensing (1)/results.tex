@@ -17,27 +17,22 @@
 
 \subsection{Navigability Estimation Performance}
 
-Figure~\ref{fig:arch_f1} compares the four architectures using per-class $F_1$
-broken down by camera direction. All models estimate the three navigability
-states well above chance from the raw $32\times24$ thermal tiles, confirming that
-directional navigability is recoverable from ultra-low-resolution thermal sensing
-alone. On the validation set, Feature Fusion is the strongest of the calibrated
-(non-shuffled) models, reaching overall per-class $F_1$ of roughly $0.81$
-(clear), $0.83$ (person), and $0.80$ (other object). The stitched-panorama and
-output-fusion baselines trail it, with overall $F_1$ near $0.73$--$0.78$, and
-both show markedly weaker person detection on the right camera, where the useful
-thermal signal is sparsest.
+Figure~\ref{fig:arch_f1} compares the four architectures with per-class $F_1$ per
+camera direction. Every model beats chance on the raw $32\times24$ tiles. On
+validation, Feature Fusion leads the non-shuffled models with overall per-class
+$F_1$ around $0.81$ (clear), $0.83$ (person), and $0.80$ (other object). The
+stitched panorama and output-fusion baselines sit near $0.73$--$0.78$ overall
+and are weakest on person detection from the right camera, where the thermal
+signal is thinnest.
 
 \subsection{Fusion Strategy Analysis}
 
-Feature-level fusion consistently outperforms both pixel-level stitching and
-decision-level output fusion. Mixing intermediate feature maps across cameras at
-every backbone depth preserves cross-camera spatial detail that the alternatives
-discard: the stitched panorama warps and blurs the already-coarse thermal signal
-before the model sees it, while output fusion only combines low-dimensional,
-already-classified logits. Feature fusion costs extra backbone passes, but on
-these ultra-low-resolution tiles the accuracy gain justifies the compute, so we
-adopt it as the reference architecture for the robustness study.
+Feature-level fusion beats pixel-level stitching and decision-level output
+fusion. Concatenating feature maps across cameras at each backbone level keeps
+spatial cues that stitching loses in the warp and that output fusion never sees
+because it only merges logits. Feature fusion runs more backbone passes, but on
+tiles this small the gain is large enough to use it in the shuffle experiments
+below.
 
 \begin{figure}[!b]
   \centering
@@ -55,14 +50,11 @@ adopt it as the reference architecture for the robustness study.
 
 \subsection{Camera Arrangement Robustness}
 
-Figure~\ref{fig:ff_shuffle} reports Feature Fusion under permuted camera slots on
-the held-out test set. Without correction (blind), shuffling the physical
-camera-to-slot assignment collapses performance to overall per-class $F_1$ near
-$0.40$--$0.42$, confirming that the fixed-slot projection layers learn a
-positional dependence that does not survive re-arrangement. The lightweight
-camera-identity classifier, which re-sorts tiles to their most likely directions
-before the unmodified model, restores overall $F_1$ to roughly $0.90$--$0.92$
-across all three classes---matching the ground-truth oracle re-sort to within
-rounding. Once tiles are routed to the correct directions the underlying features
-are themselves directionally meaningful, so the system is robust to camera
-placement rather than overfit to which camera feeds which input channel.
+Figure~\ref{fig:ff_shuffle} shows Feature Fusion on permuted camera slots in the
+held-out test set. With no correction (blind), shuffling slots drops overall
+per-class $F_1$ to about $0.40$--$0.42$: the fixed-order projection layers in
+Model~3 encode slot position. A small camera-identity classifier re-sorts the
+tiles before inference and brings overall $F_1$ back to about $0.90$--$0.92$ on
+all three classes, within rounding of the oracle that uses ground-truth slot
+identities. The backbone features carry direction information; what breaks under
+shuffle is the slot ordering, not the thermal representation itself.

@@ -1,44 +1,34 @@
 \section{Introduction}
 
-Wearable navigation aids promise greater independence for visually impaired
-users in unfamiliar indoor spaces, but their sensing stacks are costly. Most
-rely on high-resolution RGB or active depth sensors, which continuously capture
-identifiable imagery of bystanders and raise privacy concerns when worn indoors.
-They also require large hand-labeled datasets to learn which directions are
-walkable, and typically assume a fixed, geometrically calibrated camera layout
-that breaks as soon as a sensor shifts.
+Wearable navigation systems for visually impaired users have relied on RGB
+cameras or depth sensors that capture identifiable imagery, on large hand-labeled
+datasets, and on a fixed calibrated camera layout. A sensor that moves on the rig
+breaks the usual geometric assumptions.
 
-Ultra-low-resolution thermal sensing is an appealing alternative. A
-$32\times24$-pixel array costs a few tens of dollars, draws little power, is
-invariant to lighting, and is too coarse to resolve identifiable facial
-features. These same properties make perception hard: each frame carries little
-spatial detail, several cameras are needed for useful coverage, and annotating
-thermal data is laborious. We therefore ask whether \emph{directional
-navigability}---which directions around the wearer are walkable---can be
-estimated from ultra-low-resolution thermal imagery alone, without geometric
-calibration and without manual labels.
+Ultra-low-resolution thermal cameras are cheaper and more private. A
+$32\times24$ array costs on the order of tens of dollars, draws little power,
+and is too coarse to identify faces. Each tile also carries very little spatial
+detail, several cameras are needed for useful coverage, and thermal labels are
+slow to collect by hand. We test whether directional navigability (whether the
+left, middle, and right views are walkable or obstructed) can be estimated from
+thermal tiles alone, without calibration and without manual labels.
 
-We answer this affirmatively with a calibration-free, RGB-supervised framework
-(Fig.~\ref{fig:pipeline}). During data collection only, a high-resolution RGB
-camera rides alongside a wearable rig of three ultra-low-resolution thermal
-cameras; an off-the-shelf detector run on the RGB frames automatically generates
-per-direction navigability labels, so no manual annotation is needed. At
-inference the RGB camera is removed: the model consumes only the three raw
-thermal tiles and predicts, for each of the left, middle, and right directions,
-whether the space is clear, occupied by a person, or blocked by another object.
-Because supervision is transferred through labels rather than pixel-aligned
-feature matching, the framework needs no calibration, no pixel-level alignment,
-and no fixed correspondence between sensor position and input channel.
+RGB is used only while collecting data (Fig.~\ref{fig:pipeline}). A
+high-resolution camera on the wearable rig records frames in sync with three
+ultra-low-resolution thermal cameras. A pretrained detector on the RGB stream
+assigns a navigability label to each direction. At inference only the thermal
+tiles are available, and the model outputs a three-class state per direction
+(clear, person, other object). Supervision comes through discrete labels, not
+aligned pixels, so inference does not require calibration or a fixed
+camera-to-slot mapping.
 
-Within this framework we study two deployment-critical questions---how to fuse
-the three views, and how robust the system is to camera placement---which
-motivate our contributions: (i)~a calibration-free framework that transfers
-navigability supervision from an RGB detector to a thermal-only model, with no
-labels or RGB at deployment; (ii)~a direct comparison of three multi-view fusion
-strategies (pixel-, decision-, and feature-level) on ultra-low-resolution
-thermal data; and (iii)~an analysis showing that a lightweight
-camera-identity correction restores accuracy when camera slots are shuffled,
-matching a ground-truth oracle re-sort.
+We compare pixel-level stitching, decision-level output fusion, and
+feature-level fusion on the three thermal views, and we test slot permutations
+with and without a small identity classifier that re-sorts tiles before
+inference. The paper reports (i) a calibration-free training pipeline with no
+manual thermal labels and no RGB at inference; (ii) an empirical comparison of
+the three fusion strategies at this resolution; and (iii) an identity correction
+that recovers oracle-level accuracy after slot shuffles.
 
 \begin{figure*}[!t]
   \centering
