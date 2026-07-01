@@ -1,5 +1,11 @@
 \section{Methodology}
 
+\begin{figure*}[!t]
+  \centering
+  \includegraphics[width=\textwidth]{ershad_workflow.pdf}
+  \caption{Ershad system overview. During \emph{training time}, synchronized RGB frames from the data-collection rig are auto-annotated with a pretrained YOLO detector; detections are projected onto the thermal panorama and converted into per-direction thermal labels for the three active cameras (cam2, cam5, cam4). A Feature Fusion model is trained on raw $32\times24$ thermal tiles with masked three-class supervision. At \emph{deployment}, only the wearable thermal rig is used: live tiles pass through the trained Feature Fusion network to produce per-direction navigability states (\texttt{free path}, \texttt{person}, \texttt{other object}).}
+  \label{fig:workflow}
+\end{figure*}
 
 \subsection{Problem Formulation}
 % Input:
