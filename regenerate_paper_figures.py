@@ -22,6 +22,7 @@ plt.rcParams.update({
 })
 
 OUT_DIR = Path(__file__).resolve().parent / "paper_figures"
+REPO_ROOT = Path(__file__).resolve().parent
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 GROUPS = ["left", "middle", "right", "overall"]
 GROUP_LABELS = ["Left", "Middle", "Right", "Overall"]
@@ -168,6 +169,14 @@ def _finalize_figure(fig, bottom=0.28):
     fig.subplots_adjust(left=0.07, right=0.99, top=0.94, bottom=bottom, wspace=0.18)
 
 
+def _save_fig(name):
+    """Write to paper_figures/ and a copy at repo root."""
+    for directory in (OUT_DIR, REPO_ROOT):
+        path = directory / name
+        plt.savefig(path, dpi=200, bbox_inches="tight", pad_inches=0.04, facecolor="white")
+        print(f"saved -> {path}")
+
+
 def draw_fig1():
     model_names = list(models_data_by_class.keys())
     n_models = len(model_names)
@@ -200,10 +209,8 @@ def draw_fig1():
     handles, labels = axes[0].get_legend_handles_labels()
     _legend_below(fig, handles, labels, ncol=3)
     _finalize_figure(fig, bottom=0.28)
-    path = OUT_DIR / "fig1_macro_f1_color.png"
-    plt.savefig(path, dpi=200, bbox_inches="tight", pad_inches=0.04, facecolor="white")
+    _save_fig("fig1_macro_f1_color.png")
     plt.close()
-    print(f"saved -> {path}")
 
 
 def draw_fig2():
@@ -226,10 +233,8 @@ def draw_fig2():
     handles, labels = ax.get_legend_handles_labels()
     _legend_below(fig, handles, labels, ncol=3)
     _finalize_figure(fig, bottom=0.22)
-    path = OUT_DIR / "fig2_ff_per_class_color.png"
-    plt.savefig(path, dpi=200, bbox_inches="tight", pad_inches=0.04, facecolor="white")
+    _save_fig("fig2_ff_per_class_color.png")
     plt.close()
-    print(f"saved -> {path}")
 
 
 if __name__ == "__main__":

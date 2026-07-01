@@ -8,6 +8,8 @@ Latest evaluation bar charts for the DareDevil obstruction-detection paper.
 | `fig2_ff_per_class_color.png` | Feature Fusion + classifier shuffle — per-class F1 on held-out test set |
 | `captions.txt` | LaTeX-ready figure captions (not rendered in the plots) |
 
+Copies of the PNGs are also written to the **repo root** for quick access.
+
 ## Regenerate
 
 From the repo root:
