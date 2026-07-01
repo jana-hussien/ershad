@@ -6,19 +6,17 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
+# Keep DareDevil paper font (Times New Roman serif)
 plt.rcParams.update({
     "font.family": "serif",
     "font.serif": ["Times New Roman", "Times", "DejaVu Serif"],
-    "font.size": 11,
-    "axes.labelsize": 11,
-    "xtick.labelsize": 11,
-    "ytick.labelsize": 11,
-    "legend.fontsize": 9,
+    "font.size": 13,
+    "axes.labelsize": 13,
+    "xtick.labelsize": 12,
+    "ytick.labelsize": 12,
+    "legend.fontsize": 10,
     "figure.dpi": 150,
-    "axes.grid": True,
-    "grid.alpha": 0.3,
-    "grid.linestyle": "--",
-    "grid.color": "#AAAAAA",
+    "axes.grid": False,
     "axes.spines.top": False,
     "axes.spines.right": False,
 })
@@ -26,12 +24,12 @@ plt.rcParams.update({
 OUT_DIR = Path(__file__).resolve().parent
 GROUPS = ["left", "middle", "right", "overall"]
 GROUP_LABELS = ["Left", "Middle", "Right", "Overall"]
-CLASS_LABELS = ["Clear", "Person", "Other Object"]
 CLASS_KEYS = [0, 1, 2]
 
-# Val-set per-class F1 (from figures-creation.ipynb Section 12 table)
+
 def _mk(c0, c1, c2):
     return {0: c0, 1: c1, 2: c2}
+
 
 models_data_by_class = {
     "Baseline 1\n(Stitched)": {
@@ -52,7 +50,6 @@ models_data_by_class = {
         "right": _mk(0.885, 0.724, 0.775),
         "overall": _mk(0.814, 0.827, 0.798),
     },
-    # Held-out test, shuffle variants (classifier/oracle from fig2; blind approximated from macro ratios)
     "FF + Shuffle\n(Blind)": {
         "left": _mk(0.36, 0.35, 0.33),
         "middle": _mk(0.56, 0.55, 0.54),
@@ -85,57 +82,67 @@ COLOR_CLASS = {
 }
 
 
-def _style_yaxis(ax, ylabel=None):
+def _style_axes(ax, ylabel=None):
+    """Match reference charts: y in [0,1], horizontal grid at 0.5 and 1.0 only."""
     ax.set_ylim(0, 1.0)
     ax.set_yticks([0, 0.5, 1.0])
+    ax.yaxis.grid(True, linestyle="--", color="#AAAAAA", alpha=0.5, linewidth=0.8)
+    ax.set_axisbelow(True)
     if ylabel:
-        ax.set_ylabel(ylabel, fontsize=11)
+        ax.set_ylabel(ylabel)
 
 
-def _add_grouped_bar_labels(ax, bar_groups, val_groups, base_pad=0.02, min_sep=0.03):
-    n_groups = len(val_groups[0])
-    label_top = 0.0
-    for gi in range(n_groups):
+def _group_separators(ax, n_groups):
+    for xi in range(1, n_groups):
+        ax.axvline(xi - 0.5, color="#AAAAAA", linestyle=":", linewidth=0.8, alpha=0.7)
+
+
+def _add_bar_value_labels(ax, bar_groups, val_groups, fmt="{:.2f}"):
+    """Reference-style bold value labels above bars; stagger only when needed."""
+    for gi in range(len(val_groups[0])):
         pts = []
         for bars, vals in zip(bar_groups, val_groups):
             bar = bars[gi]
             pts.append((bar.get_x() + bar.get_width() / 2, vals[gi]))
-        ys = [val + base_pad for _, val in pts]
+        ys = [val + 0.02 for _, val in pts]
         for i in range(1, len(pts)):
             if abs(pts[i][0] - pts[i - 1][0]) < 0.25 and abs(pts[i][1] - pts[i - 1][1]) < 0.03:
-                ys[i] = max(ys[i], ys[i - 1] + min_sep)
+                ys[i] = max(ys[i], ys[i - 1] + 0.03)
         for (cx, val), y in zip(pts, ys):
-            ax.text(cx, y, f"{val:.2f}", ha="center", va="bottom", fontsize=8, clip_on=False)
-            label_top = max(label_top, y)
-    return label_top
+            ax.text(cx, y, fmt.format(val), ha="center", va="bottom",
+                    fontsize=9, fontweight="bold", clip_on=False)
+
+
+def _legend_below(fig, handles, labels, ncol=3, bottom=0.30):
+    fig.legend(handles, labels, loc="upper center", bbox_to_anchor=(0.5, 0.02),
+               ncol=ncol, frameon=True, edgecolor="black", facecolor="white",
+               fontsize=9, columnspacing=1.0, handlelength=1.4)
+    fig.subplots_adjust(bottom=bottom)
 
 
 def draw_fig1():
+    """Three-panel layout like the WER/SS reference; legend below in columns."""
     model_names = list(models_data_by_class.keys())
     n_models = len(model_names)
-    fig, axes = plt.subplots(1, 3, figsize=(10.5, 2.8), sharey=True)
+    fig, axes = plt.subplots(1, 3, figsize=(11, 3.0), sharey=True)
     x = np.arange(len(GROUPS))
     w = 0.11
     offsets = np.linspace(-(n_models - 1) / 2 * w, (n_models - 1) / 2 * w, n_models)
 
-    for ax, cls_key, panel_label in zip(axes, CLASS_KEYS, CLASS_LABELS):
+    for ax, cls_key in zip(axes, CLASS_KEYS):
         for name, shade, hatch, offset in zip(model_names, COLOR_SHADES, COLOR_HATCHES, offsets):
             vals = [models_data_by_class[name][g][cls_key] for g in GROUPS]
             ax.bar(x + offset, vals, w, color=shade, hatch=hatch,
-                   edgecolor="black", linewidth=1.0, label=name)
-        ax.axvline(x[-1] - 0.5, color="#AAAAAA", linestyle="--", linewidth=0.8, alpha=0.6)
+                   edgecolor="black", linewidth=1.2, label=name)
+        _group_separators(ax, len(GROUPS))
         ax.set_xticks(x)
-        ax.set_xticklabels(GROUP_LABELS, fontsize=11)
-        _style_yaxis(ax)
-        ax.text(0.5, 0.97, panel_label, transform=ax.transAxes,
-                ha="center", va="top", fontsize=11, fontweight="bold")
+        ax.set_xticklabels(GROUP_LABELS)
+        _style_axes(ax)
 
-    _style_yaxis(axes[0], "F1 Score")
+    axes[0].set_ylabel("F1 Score")
     handles, labels = axes[0].get_legend_handles_labels()
-    fig.legend(handles, labels, loc="upper center", bbox_to_anchor=(0.5, -0.02),
-               ncol=3, frameon=True, edgecolor="black", fontsize=8)
-    plt.tight_layout(pad=0.5)
-    fig.subplots_adjust(bottom=0.28, wspace=0.08)
+    _legend_below(fig, handles, labels, ncol=3, bottom=0.32)
+    plt.tight_layout(rect=[0, 0.08, 1, 1], pad=0.6, w_pad=1.2)
     path = OUT_DIR / "fig1_macro_f1_color.png"
     plt.savefig(path, dpi=200, bbox_inches="tight", facecolor="white")
     plt.close()
@@ -143,25 +150,25 @@ def draw_fig1():
 
 
 def draw_fig2():
+    """Single grouped chart like the T2M/IPE reference; legend upper-left."""
     x = np.arange(len(GROUPS))
-    w = 0.22
-    fig, ax = plt.subplots(figsize=(5.5, 2.8))
-    kw = dict(edgecolor="black", linewidth=1.0)
+    w = 0.24
+    fig, ax = plt.subplots(figsize=(6.0, 3.0))
+    kw = dict(edgecolor="black", linewidth=1.2)
     b1 = ax.bar(x - w, clear_f1, w, label="Clear",
                 color=COLOR_CLASS["Clear"][0], hatch=COLOR_CLASS["Clear"][1], **kw)
     b2 = ax.bar(x, person_f1, w, label="Person",
                 color=COLOR_CLASS["Person"][0], hatch=COLOR_CLASS["Person"][1], **kw)
     b3 = ax.bar(x + w, other_f1, w, label="Other Object",
                 color=COLOR_CLASS["Other Object"][0], hatch=COLOR_CLASS["Other Object"][1], **kw)
-    _add_grouped_bar_labels(ax, [b1, b2, b3], [clear_f1, person_f1, other_f1])
-    ax.axvline(x[-1] - 0.5, color="#AAAAAA", linestyle="--", linewidth=0.8, alpha=0.6)
+    _add_bar_value_labels(ax, [b1, b2, b3], [clear_f1, person_f1, other_f1])
+    _group_separators(ax, len(GROUPS))
     ax.set_xticks(x)
-    ax.set_xticklabels(GROUP_LABELS, fontsize=11)
-    _style_yaxis(ax, "F1 Score")
-    ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.18), ncol=3,
-              frameon=True, edgecolor="black", fontsize=9)
-    plt.tight_layout(pad=0.5)
-    fig.subplots_adjust(bottom=0.22)
+    ax.set_xticklabels(GROUP_LABELS)
+    _style_axes(ax, "F1 Score")
+    ax.legend(loc="upper left", frameon=True, edgecolor="black", facecolor="white",
+              fontsize=10, handlelength=1.4)
+    plt.tight_layout(pad=0.6)
     path = OUT_DIR / "fig2_ff_per_class_color.png"
     plt.savefig(path, dpi=200, bbox_inches="tight", facecolor="white")
     plt.close()
