@@ -1,0 +1,4 @@
+Correction,Mean Macro F1
+Blind (no correction),0.4115
+Classifier-corrected,0.9092
+Oracle-corrected (upper bound),0.911

@@ -1,0 +1,14 @@
+Model,Direction,F1 (no object),F1 (person),F1 (other object),"Macro F1
+(person+other)"
+Baseline 1 (Stitched),Left,0.683,0.0,0.297,0.148
+Baseline 1 (Stitched),Middle,0.427,0.733,0.749,0.741
+Baseline 1 (Stitched),Right,0.689,0.219,0.504,0.362
+Baseline 1 (Stitched),Overall,—,—,—,0.417
+Baseline 2 (Output Fusion),Left,0.784,0.364,0.285,0.324
+Baseline 2 (Output Fusion),Middle,0.071,0.619,0.806,0.713
+Baseline 2 (Output Fusion),Right,0.742,0.3,0.244,0.272
+Baseline 2 (Output Fusion),Overall,—,—,—,0.436
+Feature Fusion (best combo),Left,0.937,0.941,0.871,0.906
+Feature Fusion (best combo),Middle,0.901,0.944,0.96,0.952
+Feature Fusion (best combo),Right,0.922,0.868,0.881,0.875
+Feature Fusion (best combo),Overall,—,—,—,0.911
