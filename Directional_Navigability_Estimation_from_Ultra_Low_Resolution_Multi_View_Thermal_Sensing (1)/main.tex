@@ -432,13 +432,13 @@
 
 
 \begin{abstract}
-Reliable perception of navigable indoor spaces remains a challenge for wearable navigation systems, which typically rely on high-resolution cameras, depth sensors, or large annotated datasets---limiting deployability in privacy-sensitive environments and raising development costs.
+Reliable perception of navigable indoor spaces remains a challenge for wearable navigation systems. Existing approaches typically rely on high-resolution cameras, depth sensors, or large annotated datasets, limiting their deployability in privacy-sensitive environments and increasing development costs.
 %
-This paper investigates whether directional navigability can be estimated using only ultra-low-resolution thermal imagery from a wearable multi-camera platform, a setting made difficult by the limited detail of low-resolution thermal sensors and the cost of annotating thermal data.
+This paper investigates whether directional navigability can be estimated using only ultra-low-resolution thermal imagery from a wearable multi-camera platform. Training such systems is challenging due to the limited visual information available in low-resolution thermal sensors and the cost of collecting and annotating large thermal datasets.
 %
-We propose a calibration-free learning framework that uses high-resolution RGB imagery during data collection to automatically generate navigability labels, enabling training without manual annotation. The resulting models estimate multi-direction navigability directly from multi-view thermal observations, requiring no geometric calibration, pixel-level alignment, or fixed sensor configuration.
+We propose a calibration-free learning framework that leverages high-resolution RGB imagery during data collection to automatically generate navigability labels, enabling the training of thermal perception models without manual annotation. The resulting models estimate navigability in multiple directions directly from multi-view thermal observations. Unlike conventional cross-modal approaches, the proposed framework does not require geometric calibration, pixel-level alignment, or fixed sensor configurations.
 %
-Experiments with a wearable rig of three ultra-low-resolution thermal cameras show that directional navigability can be reliably inferred from thermal sensing alone. We further compare multi-camera fusion strategies and evaluate robustness to camera-arrangement changes, highlighting ultra-low-resolution thermal sensing as a scalable, privacy-preserving solution for wearable indoor navigation.
+Experiments using a wearable platform equipped with three ultra-low-resolution thermal cameras demonstrate that directional navigability can be reliably inferred from thermal sensing alone. We further compare alternative multi-camera fusion strategies and evaluate robustness to changes in camera arrangement. The results highlight the potential of ultra-low-resolution thermal sensing as a scalable and privacy-preserving solution for wearable indoor navigation.
 
 
 % Reliable perception of navigable indoor spaces remains a fundamental challenge for wearable navigation systems. Existing approaches typically rely on high-resolution RGB cameras, depth sensors, or extensive annotated datasets, limiting their deployability in privacy-sensitive environments and increasing the cost of data collection and model development.
