@@ -1,1 +1,60 @@
 \section{Introduction}
+
+Wearable navigation aids promise greater independence for visually impaired
+users in unfamiliar indoor spaces, but their sensing stacks are costly. Most
+rely on high-resolution RGB or active depth sensors, which continuously capture
+identifiable imagery of bystanders and raise privacy concerns when worn indoors.
+They also require large hand-labeled datasets to learn which directions are
+walkable, and typically assume a fixed, geometrically calibrated camera layout
+that breaks as soon as a sensor shifts.
+
+Ultra-low-resolution thermal sensing is an appealing alternative. A
+$32\times24$-pixel array costs a few tens of dollars, draws little power, is
+invariant to lighting, and is too coarse to resolve identifiable facial
+features. These same properties make perception hard: each frame carries little
+spatial detail, several cameras are needed for useful coverage, and annotating
+thermal data is laborious. We therefore ask whether \emph{directional
+navigability}---which directions around the wearer are walkable---can be
+estimated from ultra-low-resolution thermal imagery alone, without geometric
+calibration and without manual labels.
+
+We answer this affirmatively with a calibration-free, RGB-supervised framework
+(Fig.~\ref{fig:pipeline}). During data collection only, a high-resolution RGB
+camera rides alongside a wearable rig of three ultra-low-resolution thermal
+cameras; an off-the-shelf detector run on the RGB frames automatically generates
+per-direction navigability labels, so no manual annotation is needed. At
+inference the RGB camera is removed: the model consumes only the three raw
+thermal tiles and predicts, for each of the left, middle, and right directions,
+whether the space is clear, occupied by a person, or blocked by another object.
+Because supervision is transferred through labels rather than pixel-aligned
+feature matching, the framework needs no calibration, no pixel-level alignment,
+and no fixed correspondence between sensor position and input channel.
+
+Within this framework we study two deployment-critical questions---how to fuse
+the three views, and how robust the system is to camera placement---which
+motivate our contributions: (i)~a calibration-free framework that transfers
+navigability supervision from an RGB detector to a thermal-only model, with no
+labels or RGB at deployment; (ii)~a direct comparison of three multi-view fusion
+strategies (pixel-, decision-, and feature-level) on ultra-low-resolution
+thermal data; and (iii)~an analysis showing that a lightweight
+camera-identity correction restores accuracy when camera slots are shuffled,
+matching a ground-truth oracle re-sort.
+
+\begin{figure*}[!t]
+  \centering
+  % Replace the placeholder below with the final pipeline artwork, e.g.:
+  % \includegraphics[width=\textwidth]{pipeline_overview.png}
+  \figplaceholder[\textwidth]{0.15\textheight}{%
+    \textbf{Full-width pipeline figure.}\\[0.3em]
+    End-to-end overview: wearable three-camera ultra-low-resolution thermal
+    capture (RGB camera used only at data-collection time) $\rightarrow$
+    RGB/YOLO automatic per-direction label generation $\rightarrow$ the four
+    thermal fusion models (stitched panorama, output fusion, feature fusion,
+    feature fusion with camera-identity correction) $\rightarrow$ per-direction
+    navigability predictions.}
+  \caption{End-to-end pipeline, from multi-view thermal data collection and
+  RGB-based automatic labeling to the family of thermal fusion models evaluated
+  in this paper. The RGB camera is present only during data collection; at
+  inference the models use the three ultra-low-resolution thermal tiles alone.}
+  \label{fig:pipeline}
+\end{figure*}

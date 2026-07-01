@@ -2,23 +2,39 @@
 
 
 \subsection{Problem Formulation}
-% Input:
 
-% Three thermal images.
-% Output:
-% Left, Front, Right navigability states.
+At each timestep the wearable rig produces three ultra-low-resolution thermal
+tiles $\{x_{\text{L}}, x_{\text{M}}, x_{\text{R}}\}$, one per active camera, each
+of size $32\times24$. The task is to predict, for every direction
+$d \in \{\text{left}, \text{middle}, \text{right}\}$, a navigability state
+$y_d \in \{\texttt{no\_object}, \texttt{person}, \texttt{other\_object}\}$,
+where \texttt{no\_object} denotes a clear (walkable) direction and the remaining
+two states denote an obstruction, separated by whether the obstruction is a
+person or another object. A model is thus a map
+$f: (x_{\text{L}}, x_{\text{M}}, x_{\text{R}}) \mapsto (y_{\text{L}},
+y_{\text{M}}, y_{\text{R}})$ that operates on the raw thermal tiles alone at
+inference time. Supervision comes from a paired high-resolution RGB camera used
+only during data collection (Section~\ref{sec:labels}), and each direction
+carries a validity mask so that timesteps without a usable RGB label do not
+contribute to the loss.
 
 \subsection{RGB-Based Automatic Label Generation}
-% RGB frame
-%  YOLO detections
-%  spatial post-processing
-%  left/front/right navigability labels.
+\label{sec:labels}
 
-% Explain:
-
-% image partitioning,
-% occupancy rules,
-% label generation.
+Ground-truth navigability labels are generated automatically from the paired RGB
+stream, eliminating manual annotation. For each synchronized RGB frame we run a
+pretrained YOLOv8 detector; detections of the COCO \texttt{person} class are
+mapped to the \texttt{person} state and all other detected object classes to
+\texttt{other\_object}. To assign detections to directions, each detection's
+image-space bounding box is tested for overlap against the horizontal footprint
+of each active thermal camera's field of view, recovered from the RGB-to-thermal
+homographies estimated once at rig-build time. A direction is labeled
+\texttt{person} if a person detection overlaps its footprint, \texttt{other\_object}
+if only a non-person detection overlaps, and \texttt{no\_object} (clear)
+otherwise. Frames without a reliable homography-derived footprint are marked
+invalid for that direction and masked out of training. This yields per-direction,
+three-class labels aligned to the thermal tiles without any pixel-level
+correspondence between the RGB and thermal sensors at inference time.
 
 \subsection{Thermal Fusion Architectures}
 
