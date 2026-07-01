@@ -20,13 +20,30 @@ The wearable platform incorporates multiple MLX90640 SparkFun IR Array Breakout 
 
 \subsection{Data Collection}
 
-%Environments.
-%Routes.
-%Participants.
-%Recording procedure.
+Data were recorded by walking the wearable rig through indoor environments while
+a high-resolution RGB camera, rigidly mounted alongside the thermal array,
+captured a time-synchronized reference stream used only for label generation.
+During each traversal the three active thermal cameras and the RGB camera
+recorded timestamped frames continuously, producing sequences that span clear
+corridors as well as encounters with people and static objects, so that all
+three navigability states are represented across the left, middle, and right
+directions. Only the thermal tiles and their automatically generated
+per-direction labels (Section~\ref{sec:labels}) are retained for model training;
+the RGB stream is discarded after labeling and is never available at inference.
 
 \subsection{Training Protocol}
 
-% Train/validation/test split.
-% Optimization details.
-% Evaluation metrics.
+To avoid leaking temporally adjacent, near-duplicate frames across splits, we use
+a blocked partition: each recording is divided into contiguous blocks and the
+final $20\%$ of every block is held out for validation, giving a train/validation
+split that keeps correlated neighbors together. Camera-identity-shuffle
+experiments are additionally evaluated on a held-out test set. All learned models
+share the same masked, per-camera, three-class cross-entropy objective and are
+trained with Adam (learning rate $10^{-3}$, weight decay $10^{-4}$) under a
+cosine-annealing schedule for $30$ epochs at batch size $64$, with class
+weighting to counter the imbalance toward clear directions. For Feature Fusion we
+additionally sweep backbone depth, width, activation, and head capacity and
+report the best configuration. We evaluate with per-class $F_1$ score reported
+per direction (left, middle, right) and overall; because the label distribution
+is skewed toward clear directions, macro-averaged $F_1$ is used for model
+selection rather than raw accuracy.

@@ -65,6 +65,41 @@
 %
 \documentclass[conference]{IEEEtran}
 \usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{stfloats} % allow full-width figure* at page bottom
+
+% Relax float-placement limits so the pipeline figure and the two bar charts
+% pack into the page budget instead of overflowing onto an extra page.
+\renewcommand{\topfraction}{0.95}
+\renewcommand{\dbltopfraction}{0.95}
+\renewcommand{\bottomfraction}{0.7}
+\renewcommand{\textfraction}{0.05}
+\renewcommand{\floatpagefraction}{0.6}
+\renewcommand{\dblfloatpagefraction}{0.6}
+\setcounter{topnumber}{3}
+\setcounter{dbltopnumber}{3}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{5}
+
+% ---------------------------------------------------------------------------
+% Figure placeholders.
+% These reserve page space for artwork that is still being finalized:
+%   - the two evaluation bar charts (fig1_macro_f1_color.png,
+%     fig2_ff_per_class_color.png), and
+%   - the full-width end-to-end pipeline figure (data collection -> models).
+% Drop in the final artwork by replacing the \figplaceholder{...} call with an
+% \includegraphics{...} line (the intended file names are noted in each caption).
+% ---------------------------------------------------------------------------
+\newcommand{\figplaceholder}[3][0.9\linewidth]{%
+  \setlength{\fboxsep}{0pt}%
+  \fbox{\begin{minipage}[c][#2][c]{#1}%
+    \centering
+    \color{gray}\itshape
+    [\,PLACEHOLDER\,]\\[0.4em]
+    #3
+  \end{minipage}}%
+}
 % Add the compsoc option for Computer Society conferences.
 %
 % If IEEEtran.cls has not been installed into the LaTeX system files,
@@ -397,13 +432,13 @@
 
 
 \begin{abstract}
-Reliable perception of navigable indoor spaces remains a challenge for wearable navigation systems. Existing approaches typically rely on high-resolution cameras, depth sensors, or large annotated datasets, limiting their deployability in privacy-sensitive environments and increasing development costs.
+Reliable perception of navigable indoor spaces remains a challenge for wearable navigation systems, which typically rely on high-resolution cameras, depth sensors, or large annotated datasets---limiting deployability in privacy-sensitive environments and raising development costs.
 %
-This paper investigates whether directional navigability can be estimated using only ultra-low-resolution thermal imagery from a wearable multi-camera platform. Training such systems is challenging due to the limited visual information available in low-resolution thermal sensors and the cost of collecting and annotating large thermal datasets.
+This paper investigates whether directional navigability can be estimated using only ultra-low-resolution thermal imagery from a wearable multi-camera platform, a setting made difficult by the limited detail of low-resolution thermal sensors and the cost of annotating thermal data.
 %
-We propose a calibration-free learning framework that leverages high-resolution RGB imagery during data collection to automatically generate navigability labels, enabling the training of thermal perception models without manual annotation. The resulting models estimate navigability in multiple directions directly from multi-view thermal observations. Unlike conventional cross-modal approaches, the proposed framework does not require geometric calibration, pixel-level alignment, or fixed sensor configurations.
+We propose a calibration-free learning framework that uses high-resolution RGB imagery during data collection to automatically generate navigability labels, enabling training without manual annotation. The resulting models estimate multi-direction navigability directly from multi-view thermal observations, requiring no geometric calibration, pixel-level alignment, or fixed sensor configuration.
 %
-Experiments using a wearable platform equipped with three ultra-low-resolution thermal cameras demonstrate that directional navigability can be reliably inferred from thermal sensing alone. We further compare alternative multi-camera fusion strategies and evaluate robustness to changes in camera arrangement. The results highlight the potential of ultra-low-resolution thermal sensing as a scalable and privacy-preserving solution for wearable indoor navigation.
+Experiments with a wearable rig of three ultra-low-resolution thermal cameras show that directional navigability can be reliably inferred from thermal sensing alone. We further compare multi-camera fusion strategies and evaluate robustness to camera-arrangement changes, highlighting ultra-low-resolution thermal sensing as a scalable, privacy-preserving solution for wearable indoor navigation.
 
 
 % Reliable perception of navigable indoor spaces remains a fundamental challenge for wearable navigation systems. Existing approaches typically rely on high-resolution RGB cameras, depth sensors, or extensive annotated datasets, limiting their deployability in privacy-sensitive environments and increasing the cost of data collection and model development.
@@ -441,6 +476,8 @@ Experiments using a wearable platform equipped with three ultra-low-resolution t
 \input{methodology}
 
 \input{experiments}
+
+\input{results}
 
 % conference papers do not normally have an appendix
 
