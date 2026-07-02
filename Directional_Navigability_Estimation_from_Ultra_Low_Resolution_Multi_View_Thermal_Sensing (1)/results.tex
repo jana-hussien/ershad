@@ -2,12 +2,7 @@
 
 \begin{figure*}[!t]
   \centering
-  % Replace with the final bar chart (native aspect ratio approx 2.8:1):
-  % \includegraphics[width=\textwidth]{fig1_macro_f1_color.png}
-  \figplaceholder[\textwidth]{0.13\textheight}{%
-    \textbf{Bar chart 1: architecture comparison.}\\[0.3em]
-    Per-class $F_1$ by camera direction for the four architectures
-    (\texttt{fig1\_macro\_f1\_color.png}).}
+  \includegraphics[width=\textwidth]{fig1_macro_f1_color.pdf}
   \caption{Per-class $F_1$ by camera direction for the obstruction-detection
   architectures. Baselines and Feature Fusion are evaluated on the validation
   set; Feature Fusion with shuffle correction (blind, classifier, oracle) is
@@ -32,16 +27,14 @@ fusion. Concatenating feature maps across cameras at each backbone level keeps
 spatial cues that stitching loses in the warp and that output fusion never sees
 because it only merges logits. Feature fusion runs more backbone passes, but on
 tiles this small the gain is large enough to use it in the shuffle experiments
-below.
+below. On a single-sample CPU forward pass, Baseline 1, Baseline 2, and
+Feature Fusion take 1.36, 0.80, and 2.37 ms respectively, and the
+camera-identity classifier adds another 0.21 ms; every configuration stays
+under 3 ms, well within budget for real-time inference on a wearable device.
 
 \begin{figure}[!b]
   \centering
-  % Replace with the final bar chart (native aspect ratio approx 1.75:1):
-  % \includegraphics[width=\linewidth]{fig2_ff_per_class_color.png}
-  \figplaceholder[\linewidth]{0.11\textheight}{%
-    \textbf{Bar chart 2: shuffle-corrected Feature Fusion.}\\[0.3em]
-    Per-class $F_1$ by direction and overall
-    (\texttt{fig2\_ff\_per\_class\_color.png}).}
+  \includegraphics[width=\linewidth]{fig2_ff_per_class_color.pdf}
   \caption{Per-class $F_1$ of Feature Fusion with classifier-based shuffle
   correction on the held-out test set, broken down by camera direction (left,
   middle, right) and overall.}

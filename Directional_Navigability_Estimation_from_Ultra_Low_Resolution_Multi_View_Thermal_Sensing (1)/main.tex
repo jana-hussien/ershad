@@ -63,7 +63,7 @@
 % should be used if it is desired that the figures are to be displayed in
 % draft mode.
 %
-\documentclass[conference]{IEEEtran}
+\documentclass[conference,a4paper]{IEEEtran}
 \usepackage{amsmath}
 \usepackage{graphicx}
 \usepackage{xcolor}
@@ -392,9 +392,13 @@
 
 
 
-\author{Jana Hussien, Faiz Moazam, Gustavo Ramalho, Abdulrahman Al-Taweel, Yaqoob Ansari, and Eduardo Feo-Flushing % <-this % stops a space
-\thanks{$^{1}$School of Computer Science, Carnegie Mellon University, {\tt\small \{author1, author2, efeoflus\}@andrew.cmu.edu}, $^{2}$Carnegie Mellon University in Qatar, {\tt\small \{fmaksood\}@andrew.cmu.edu}. %
-}}
+% Author identities withheld for VCIP double-blind review.
+% Restore the real \author block below for the camera-ready version:
+% \author{Jana Hussien, Faiz Moazam, Gustavo Ramalho, Abdulrahman Al-Taweel, Yaqoob Ansari, and Eduardo Feo-Flushing % <-this % stops a space
+% \thanks{$^{1}$School of Computer Science, Carnegie Mellon University, {\tt\small \{author1, author2, efeoflus\}@andrew.cmu.edu}, $^{2}$Carnegie Mellon University in Qatar, {\tt\small \{fmaksood\}@andrew.cmu.edu}. %
+% }}
+\author{\IEEEauthorblockN{Anonymous Author(s)}
+\IEEEauthorblockA{Affiliation withheld for double-blind review}}
 
 % conference papers do not typically use \thanks and this command
 % is locked out in conference mode. If really needed, such as for
@@ -481,12 +485,15 @@ Experiments using a wearable platform equipped with three ultra-low-resolution t
 
 % conference papers do not normally have an appendix
 
+\section*{Data Availability}
+The thermal-RGB dataset collected on the wearable platform will be made
+publicly available upon publication.
 
-% use section* for acknowledgement
-\section*{Acknowledgment}
-
-
-The authors would like to thank...
+% Acknowledgment section removed for VCIP double-blind review
+% (acknowledgments and funding sources must be omitted from the
+% review copy). Restore it for the camera-ready version:
+% \section*{Acknowledgment}
+% The authors would like to thank...
 
 
 
@@ -519,7 +526,7 @@ The authors would like to thank...
 \bibitem{gao2025daredevil}
 J.~Gao, H.~K. Gedawy, E.~Feo-Flushing, and K.~A. Harras, ``A Deployable
   Privacy-Preserving Thermal-Based Obstacle Detection System for Indoor
-  Navigation (DareDevil),'' in \emph{Proc. IEEE ICC}, 2025.
+  Navigation,'' in \emph{Proc. IEEE ICC}, 2025, pp.~4245--4250.
 
 \bibitem{kim2024traversability}
 Y.~Kim, J.~H. Lee, C.~Lee, \emph{et al.}, ``Learning Semantic
@@ -537,14 +544,14 @@ A.~Naser, A.~Lotfi, and J.~Zhong, ``Calibration of Low-Resolution Thermal
   Letters}, vol.~6, no.~3, pp.~1--4, 2022.
 
 \bibitem{thermal_gyro_odom}
-% TODO(authors): replace with the full citation for the ultra-low-resolution
-% thermal-gyro odometry paper referenced in Section II-A.
-Authors, ``Title,'' \emph{Venue}, year. [citation needed]
+F.~Mohsen and A.~Safa, ``Deep Fusion of Ultra-Low-Resolution Thermal
+  Camera and Gyroscope Data for Lighting-Robust and Compute-Efficient
+  Rotational Odometry,'' \emph{arXiv preprint arXiv:2506.12536}, 2025.
 
 \bibitem{qi2021msad}
-% TODO(authors): replace with the full citation for the multi-scale aligned
-% distillation (MSAD) paper referenced in Section II-D.
-Authors, ``Title,'' \emph{Venue}, year. [citation needed]
+L.~Qi, J.~Kuen, J.~Gu, Z.~Lin, Y.~Wang, Y.~Chen, Y.~Li, and J.~Jia,
+  ``Multi-Scale Aligned Distillation for Low-Resolution Detection,'' in
+  \emph{Proc. IEEE/CVF CVPR}, 2021.
 
 \end{thebibliography}
 

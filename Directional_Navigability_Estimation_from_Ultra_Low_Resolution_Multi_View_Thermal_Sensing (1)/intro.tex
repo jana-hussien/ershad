@@ -25,10 +25,12 @@ camera-to-slot mapping.
 We compare pixel-level stitching, decision-level output fusion, and
 feature-level fusion on the three thermal views, and we test slot permutations
 with and without a small identity classifier that re-sorts tiles before
-inference. The paper reports (i) a calibration-free training pipeline with no
-manual thermal labels and no RGB at inference; (ii) an empirical comparison of
-the three fusion strategies at this resolution; and (iii) an identity correction
-that recovers oracle-level accuracy after slot shuffles.
+inference. The paper reports (i) an extension of RGB-supervised auto-labeling,
+following Gao~\textit{et al.}'s DareDevil~\cite{gao2025daredevil}, to a
+calibration-free multi-camera thermal array with no manual thermal labels and
+no RGB at inference; (ii) an empirical comparison of the three fusion
+strategies at this resolution; and (iii) an identity correction that recovers
+oracle-level accuracy after slot shuffles.
 
 \begin{figure*}[!t]
   \centering
@@ -45,6 +47,9 @@ that recovers oracle-level accuracy after slot shuffles.
   \caption{End-to-end pipeline, from multi-view thermal data collection and
   RGB-based automatic labeling to the family of thermal fusion models evaluated
   in this paper. The RGB camera is present only during data collection; at
-  inference the models use the three ultra-low-resolution thermal tiles alone.}
+  inference the models use the three ultra-low-resolution thermal tiles alone.
+  Thermal tiles are rendered here with the perceptually uniform ``inferno''
+  colormap for human readability only; the models themselves consume raw,
+  single-channel intensity values with no colorization step.}
   \label{fig:pipeline}
 \end{figure*}
