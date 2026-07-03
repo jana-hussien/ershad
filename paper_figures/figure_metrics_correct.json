@@ -1,0 +1,161 @@
+{
+  "source": "figures-creation.ipynb",
+  "models_data_by_class": {
+    "Baseline 1\n(Stitched)": {
+      "left": {
+        "clear": 0.7861507128309573,
+        "person": 0.7852193995381063,
+        "other": 0.7385245901639345
+      },
+      "middle": {
+        "clear": 0.7059421025901473,
+        "person": 0.8416107382550335,
+        "other": 0.7690655209452202
+      },
+      "right": {
+        "clear": 0.8507619548081976,
+        "person": 0.590990990990991,
+        "other": 0.6916975145425701
+      },
+      "overall": {
+        "clear": 0.780951590076434,
+        "person": 0.7392737095947103,
+        "other": 0.7330958752172417
+      }
+    },
+    "Baseline 2\n(Output Fusion)": {
+      "left": {
+        "clear": 0.8211085297046133,
+        "person": 0.8719923002887392,
+        "other": 0.7681818181818182
+      },
+      "middle": {
+        "clear": 0.5602941176470588,
+        "person": 0.8220338983050848,
+        "other": 0.7666666666666667
+      },
+      "right": {
+        "clear": 0.846788302924269,
+        "person": 0.6123260437375746,
+        "other": 0.6784897025171625
+      },
+      "overall": {
+        "clear": 0.7427303167586471,
+        "person": 0.768784080777133,
+        "other": 0.7377793957885491
+      }
+    },
+    "Feature Fusion\n(Best Combo)": {
+      "left": {
+        "clear": 0.835265191429575,
+        "person": 0.8902691511387164,
+        "other": 0.8118081180811808
+      },
+      "middle": {
+        "clear": 0.7229204069419509,
+        "person": 0.8656716417910447,
+        "other": 0.8065926673393878
+      },
+      "right": {
+        "clear": 0.8851774530271399,
+        "person": 0.7242105263157895,
+        "other": 0.7753213367609254
+      },
+      "overall": {
+        "clear": 0.8144543504662219,
+        "person": 0.8267171064151836,
+        "other": 0.797907374060498
+      }
+    },
+    "FF + Shuffle\n(Blind)": {
+      "left": {
+        "clear": 0.7228648652243423,
+        "person": 0.2531590413943355,
+        "other": 0.4436178129500547
+      },
+      "middle": {
+        "clear": 0.40233895638473444,
+        "person": 0.4198401156449311,
+        "other": 0.6766622900792031
+      },
+      "right": {
+        "clear": 0.7305652914849814,
+        "person": 0.23214554396282303,
+        "other": 0.44362963733062283
+      },
+      "overall": {
+        "clear": 0.618589704364686,
+        "person": 0.30171490033402987,
+        "other": 0.5213032467866269
+      }
+    },
+    "FF + Shuffle\n(Classifier)": {
+      "left": {
+        "clear": 0.9365325077399381,
+        "person": 0.9411764705882354,
+        "other": 0.8722741433021807
+      },
+      "middle": {
+        "clear": 0.9011627906976746,
+        "person": 0.9476923076923077,
+        "other": 0.9607390300230946
+      },
+      "right": {
+        "clear": 0.9224062772449869,
+        "person": 0.851851851851852,
+        "other": 0.8813559322033898
+      },
+      "overall": {
+        "clear": 0.9200338585608666,
+        "person": 0.9135735433774649,
+        "other": 0.9047897018428884
+      }
+    },
+    "FF + Shuffle\n(Oracle)": {
+      "left": {
+        "clear": 0.9372579395817197,
+        "person": 0.9411764705882354,
+        "other": 0.8709175738724727
+      },
+      "middle": {
+        "clear": 0.9011627906976746,
+        "person": 0.9444444444444445,
+        "other": 0.96
+      },
+      "right": {
+        "clear": 0.921602787456446,
+        "person": 0.8679245283018869,
+        "other": 0.8813559322033898
+      },
+      "overall": {
+        "clear": 0.9200078392452798,
+        "person": 0.9178484811115221,
+        "other": 0.9040911686919543
+      }
+    }
+  },
+  "fig2": {
+    "clear_f1": [
+      0.9365325077399381,
+      0.9011627906976745,
+      0.9224062772449869,
+      0.9200338585608665
+    ],
+    "person_f1": [
+      0.9411764705882353,
+      0.9476923076923077,
+      0.8518518518518519,
+      0.9135735433774649
+    ],
+    "other_f1": [
+      0.8722741433021807,
+      0.9607390300230947,
+      0.8813559322033898,
+      0.9047897018428883
+    ]
+  },
+  "captions": {
+    "fig1": "Per-class F1 by camera direction for six obstruction-detection architectures. Baselines 1\u20132 and Feature Fusion are evaluated on the validation set; Feature Fusion with shuffle correction (blind, classifier, oracle) is evaluated on the held-out test set.",
+    "fig2": "Per-class F1 of Feature Fusion with classifier-based shuffle correction on the held-out test set, broken down by camera direction (left, middle, right) and overall."
+  }
+}
