@@ -1,22 +1,16 @@
-"""Regenerate fig3/fig4 from paper_figures/figure_metrics_correct.json.
+"""Regenerate fig3/fig4 (the paper's actual Fig. 4 and Fig. 2) from
+paper_figures/figure_metrics_correct.json.
 
-Companion to regenerate_paper_figures.py (which handles fig1/fig2). Reuses
-the same house style (Times New Roman, hatched bars, framed legend below).
+NOTE on data source: figure_metrics_correct.json holds verified numbers that
+match the published PDFs. It is hand-verified and checked in as the source
+of truth; no script in this repo regenerates it automatically.
 
-NOTE on data source: this reads figure_metrics_correct.json, not the
-figure_metrics.json used by regenerate_paper_figures.py. The latter is a
-stale bootstrap file (see its own "source" field) with incorrect numbers
-for the "FF + Shuffle (Blind)" row; figure_metrics_correct.json has the
-verified numbers that actually match the published fig1/fig2 PDFs (cross-
-checked against ershad/workspace_output/figure_metrics.json and
-ershad/workspace_output/table_*.csv). The two files are intentionally kept
-separate -- figure_metrics.json is left as-is here rather than overwritten.
-
-Fig. 3: Overall-only per-class F1 for FF Blind / FF Classifier / FF Oracle
-        (3 groups on the x-axis, 3 class-colored bars per group).
-Fig. 4: Per-class F1 by direction (Left/Middle/Right only, no Overall) for
-        the three base fusion strategies, relabeled as Pixel-/Decision-/
-        Feature-Level Fusion.
+Fig. 3 (-> paper's Fig. 4): Overall-only per-class F1 for FF Blind / FF
+        Classifier / FF Oracle (3 groups on the x-axis, 3 class-colored bars
+        per group).
+Fig. 4 (-> paper's Fig. 2): Per-class F1 by direction (Left/Middle/Right
+        only, no Overall) for the three base fusion strategies, relabeled as
+        Pixel-/Decision-/Feature-Level Fusion.
 """
 import json
 from pathlib import Path
@@ -32,7 +26,7 @@ OUT_DIR = REPO_ROOT / "paper_figures"
 METRICS_PATH = OUT_DIR / "figure_metrics_correct.json"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
-# ---- exact house style from regenerate_paper_figures.py -------------------
+# ---- house style ----------------------------------------------------------
 plt.rcParams.update({
     "font.family": "serif",
     "font.serif": ["Times New Roman", "Times", "DejaVu Serif"],
@@ -45,23 +39,32 @@ plt.rcParams.update({
     "axes.grid": False,
     "axes.linewidth": 0.8,
     "axes.edgecolor": "black",
+    # Matplotlib defaults to Type 3 (bitmap) fonts in PDF/PS output, which
+    # IEEE's own author instructions explicitly warn against ("ensure ...
+    # PDF output ... uses only Type 1 fonts"). Type 42 embeds scalable
+    # TrueType outlines instead, which is what PDF compliance checkers
+    # (e.g. IEEE PDF eXpress) expect.
+    "pdf.fonttype": 42,
+    "ps.fonttype": 42,
 })
 
-FIG_H = 2.15
+FIG_H = 0.92
 BAR_KW = dict(edgecolor="black", linewidth=1.0)
 LABEL_FMT = "{:.2f}"
 LABEL_FONTSIZE = 8.5
 LABEL_PAD = 0.014
 
-COLOR_SHADES = ["#4477AA", "#66CCEE", "#228833", "#CCBB44", "#EE6677", "#AA3377"]
+# Muted variants of the Tol "bright" qualitative palette (each color blended
+# 35% toward mid-gray) -- same hues, less neon/saturated for print.
+COLOR_SHADES = ["#597A9B", "#6FB1C8", "#43854E", "#B1A659", "#C86F7A", "#9B4E7A"]
 COLOR_HATCHES = ["", "///", "...", "xxx", "---", "|||"]
 GRAY_SHADES = ["#FFFFFF", "#CCCCCC", "#888888", "#FFFFFF", "#AAAAAA", "#333333"]
 GRAY_HATCHES = ["", "///", "...", "xxx", "---", "|||"]
 
 COLOR_CLASS = {
-    "Clear": ("#4477AA", ""),
-    "Person": ("#EE6677", "///"),
-    "Other Object": ("#228833", "..."),
+    "Clear": ("#597A9B", ""),
+    "Person": ("#C86F7A", "///"),
+    "Other Object": ("#43854E", "..."),
 }
 GRAY_CLASS = {
     "Clear": ("#FFFFFF", ""),
@@ -95,37 +98,23 @@ def _group_separators(ax, n_groups):
         ax.axvline(xi - 0.5, color="#AAAAAA", linestyle=":", linewidth=0.8, alpha=0.7)
 
 
-def _add_bar_top_labels(ax, bar_groups, val_groups, rotation=0, fontsize=None, pad=None):
-    # Every label sits exactly LABEL_PAD above its own bar -- no per-label
-    # collision bumping, so the gap is visually identical bar-to-bar.
-    fontsize = fontsize or LABEL_FONTSIZE
-    pad = LABEL_PAD if pad is None else pad
-    max_label_y = 0.0
-    for gi in range(len(val_groups[0])):
-        for bars, vals in zip(bar_groups, val_groups):
-            bar = bars[gi]
-            val = float(vals[gi])
-            cx = bar.get_x() + bar.get_width() / 2
-            y = val + pad
-            max_label_y = max(max_label_y, y)
-            ax.text(cx, y, LABEL_FMT.format(val), fontsize=fontsize, rotation=rotation,
-                    fontweight="bold", ha="center", va="bottom", clip_on=False)
-    return max_label_y
-
-
-def _add_bar_inside_labels(ax, bar_groups, val_groups, fontsize=7.5, pad=0.03):
-    """Vertical value labels anchored just *inside* the top of each bar --
-    can never collide with the axes border no matter how tall the bar is,
-    since nothing is drawn above the bar's own value."""
+def _add_bar_inside_labels(ax, bar_groups, val_groups, fontsize=11, pad=0.03, rotation=90):
+    """Value labels anchored just *inside* the top of each bar -- can never
+    collide with the axes border no matter how tall the bar is, since
+    nothing is drawn above the bar's own value. Always rotated the same way
+    (default vertical) so every label across every panel/figure reads
+    consistently; a short bar's label is free to overflow past the bar's own
+    bottom edge into empty axes space, which is harmless -- unlike overflowing
+    past the axes border, nothing else is drawn there to collide with."""
     outline = [pe.withStroke(linewidth=2.2, foreground="white")]
     for gi in range(len(val_groups[0])):
         for bars, vals in zip(bar_groups, val_groups):
             bar = bars[gi]
             val = float(vals[gi])
             cx = bar.get_x() + bar.get_width() / 2
-            ax.text(cx, val - pad, LABEL_FMT.format(val), fontsize=fontsize, rotation=90,
-                    fontweight="bold", ha="center", va="top", color="black",
-                    path_effects=outline, clip_on=False, zorder=6)
+            ax.text(cx, val - pad, LABEL_FMT.format(val), fontsize=fontsize,
+                    rotation=rotation, fontweight="bold", ha="center", va="top",
+                    color="black", path_effects=outline, clip_on=False, zorder=6)
 
 
 def _set_ylim_fixed(ax):
@@ -161,10 +150,19 @@ metrics = json.loads(METRICS_PATH.read_text(encoding="utf-8"))
 M = metrics["models_data_by_class"]
 
 
+FIG3_CAPTION = (
+    "Overall per-class F1 of Feature Fusion with shuffle correction (FF + "
+    "Shuffle) on the held-out test set, under blind, classifier, and oracle "
+    "re-sorting."
+)
+
+
 def draw_fig3(shades, suffix):
     """Overall-only per-class F1: FF Blind / FF Classifier / FF Oracle."""
     model_keys = ["FF + Shuffle\n(Blind)", "FF + Shuffle\n(Classifier)", "FF + Shuffle\n(Oracle)"]
-    group_labels = model_keys
+    # "FF + Shuffle" is named once in the caption instead of on every tick,
+    # so the tick labels themselves can be short, single-line, and roomier.
+    group_labels = ["Blind", "Classifier", "Oracle"]
     x = np.arange(len(model_keys))
     w = 0.26
 
@@ -180,7 +178,11 @@ def draw_fig3(shades, suffix):
         bars.append(b)
         vals.append(class_vals[cls])
 
-    _add_bar_top_labels(ax, bars, vals)
+    # Fig. 3 has only 3 wide, touching bars per group (w=0.26 spans the same
+    # width as the offset between them), so a horizontal label fits inside
+    # each bar without touching its neighbor -- no need for fig. 4's rotation,
+    # which exists there because 9 much-narrower bars share each panel.
+    _add_bar_inside_labels(ax, bars, vals, rotation=0)
     _set_ylim_fixed(ax)
     _group_separators(ax, len(model_keys))
     _trim_xaxis(ax, len(model_keys))
@@ -188,8 +190,8 @@ def draw_fig3(shades, suffix):
     ax.set_xticklabels(group_labels)
     _style_axes(ax, "F1 Score")
     handles, labels = ax.get_legend_handles_labels()
-    _legend_below(fig, handles, labels, ncol=3, anchor_y=0.085)
-    _finalize_figure(fig, bottom=0.25, top=0.90)
+    _legend_below(fig, handles, labels, ncol=3, anchor_y=0.10, fontsize=11)
+    _finalize_figure(fig, bottom=0.28, top=0.90)
     _save_fig(fig, f"fig3_shuffle_overall_{suffix}")
 
 
@@ -233,8 +235,8 @@ def draw_fig4(shades, hatches, suffix):
         _set_ylim_fixed(ax)
 
     handles, labels = axes[0].get_legend_handles_labels()
-    _legend_below(fig, handles, labels, ncol=3, fontsize=12, anchor_y=0.15)
-    _finalize_figure(fig, bottom=0.27, top=0.90)
+    _legend_below(fig, handles, labels, ncol=3, fontsize=12, anchor_y=0.10)
+    _finalize_figure(fig, bottom=0.30, top=0.90)
     _save_fig(fig, f"fig4_fusion_by_direction_{suffix}")
 
 
@@ -242,5 +244,13 @@ if __name__ == "__main__":
     print(f"loaded metrics from {METRICS_PATH}")
     draw_fig3(COLOR_CLASS, "color")
     draw_fig3(GRAY_CLASS, "grayscale")
-    draw_fig4(COLOR_SHADES[:3], COLOR_HATCHES[:3], "color")
-    draw_fig4(GRAY_SHADES[:3], GRAY_HATCHES[:3], "grayscale")
+    # Fig. 4's bars encode fusion strategy (a different variable from fig. 3's
+    # class colors), so it draws from the *other half* of the same six-color/
+    # six-hatch palette -- sharing none of fig. 3's (color, hatch) pairs avoids
+    # implying a correlation between the two unrelated groupings.
+    fig4_color_idx = [1, 3, 5]
+    fig4_gray_idx = [3, 4, 5]
+    draw_fig4([COLOR_SHADES[i] for i in fig4_color_idx],
+              [COLOR_HATCHES[i] for i in fig4_color_idx], "color")
+    draw_fig4([GRAY_SHADES[i] for i in fig4_gray_idx],
+              [GRAY_HATCHES[i] for i in fig4_gray_idx], "grayscale")

@@ -1,3 +1,7 @@
-Fig. 1: Per-class F1 by camera direction for six obstruction-detection architectures. Baselines 1–2 and Feature Fusion are evaluated on the validation set; Feature Fusion with shuffle correction (blind, classifier, oracle) is evaluated on the held-out test set.
+Fig. 1: End-to-end pipeline. Top: RGB/YOLOv8 auto-labels supervise the shared-weight CNN backbone with no manual annotation. Bottom: thermal-only tiles, re-sorted by the camera-identity classifier, feed the frozen Feature Fusion model for three-class directional output. Inferno colormap for display only.
 
-Fig. 2: Per-class F1 of Feature Fusion with classifier-based shuffle correction on the held-out test set, broken down by camera direction (left, middle, right) and overall.
+Fig. 2: Per-class F1 by camera direction (left, middle, right) for the three fusion strategies: pixel (stitched), decision (output fusion), and feature.
+
+Fig. 3: Class distribution across camera directions for the combined training and validation split.
+
+Fig. 4: Overall per-class F1 of Feature Fusion with shuffle correction (FF + Shuffle) on the held-out test set, under blind, classifier, and oracle re-sorting.
