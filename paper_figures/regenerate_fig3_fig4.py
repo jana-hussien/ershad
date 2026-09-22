@@ -21,10 +21,8 @@ import matplotlib.pyplot as plt
 import matplotlib.patheffects as pe
 import numpy as np
 
-REPO_ROOT = Path(__file__).resolve().parent
-OUT_DIR = REPO_ROOT / "paper_figures"
+OUT_DIR = Path(__file__).resolve().parent
 METRICS_PATH = OUT_DIR / "figure_metrics_correct.json"
-OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 # ---- house style ----------------------------------------------------------
 plt.rcParams.update({
@@ -137,11 +135,10 @@ def _finalize_figure(fig, bottom=0.28, top=0.94):
 
 
 def _save_fig(fig, name):
-    for directory in (OUT_DIR, REPO_ROOT):
-        for ext, kw in (("png", {"dpi": 200}), ("pdf", {})):
-            path = directory / f"{name}.{ext}"
-            fig.savefig(path, bbox_inches="tight", pad_inches=0.04, facecolor="white", **kw)
-            print(f"saved -> {path}")
+    for ext, kw in (("png", {"dpi": 200}), ("pdf", {})):
+        path = OUT_DIR / f"{name}.{ext}"
+        fig.savefig(path, bbox_inches="tight", pad_inches=0.04, facecolor="white", **kw)
+        print(f"saved -> {path}")
     plt.close(fig)
 
 

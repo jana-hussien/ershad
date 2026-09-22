@@ -18,9 +18,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
-REPO_ROOT = Path(__file__).resolve().parent
-OUT_DIR = REPO_ROOT / "paper_figures"
-OUT_DIR.mkdir(parents=True, exist_ok=True)
+OUT_DIR = Path(__file__).resolve().parent
 
 plt.rcParams.update({
     "font.family": "serif",
@@ -95,11 +93,10 @@ def _legend_below(ax, handles, labels, ncol=3, anchor_y=0.05):
 
 
 def _save_fig(fig, name):
-    for directory in (OUT_DIR, REPO_ROOT):
-        for ext, kw in (("png", {"dpi": 200}), ("pdf", {})):
-            path = directory / f"{name}.{ext}"
-            fig.savefig(path, bbox_inches="tight", pad_inches=0.16, facecolor="white", **kw)
-            print(f"saved -> {path}")
+    for ext, kw in (("png", {"dpi": 200}), ("pdf", {})):
+        path = OUT_DIR / f"{name}.{ext}"
+        fig.savefig(path, bbox_inches="tight", pad_inches=0.16, facecolor="white", **kw)
+        print(f"saved -> {path}")
     plt.close(fig)
 
 
