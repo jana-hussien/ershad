@@ -1,0 +1,57 @@
+\documentclass[conference,a4paper]{IEEEtran}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{stfloats}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{capt-of}
+\usepackage{placeins}
+\usepackage{stfloats}
+\graphicspath{{figs/}}
+
+\renewcommand{\topfraction}{0.95}
+\renewcommand{\dbltopfraction}{0.95}
+\renewcommand{\bottomfraction}{0.7}
+\renewcommand{\textfraction}{0.05}
+\renewcommand{\floatpagefraction}{0.6}
+\renewcommand{\dblfloatpagefraction}{0.6}
+\setcounter{topnumber}{3}
+\setcounter{dbltopnumber}{3}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{5}
+
+\begin{document}
+
+% \title{Calibration-Free Directional Navigability Estimation from Ultra-Low-Resolution Multi-View Thermal Sensing}
+
+
+\title{Directional Navigability Estimation from Ultra-Low-Resolution Multi-View Thermal Sensing}
+
+% \author{\IEEEauthorblockN{Anonymous Author(s)}
+% \IEEEauthorblockA{Affiliation withheld for double-blind review}}
+
+\maketitle
+
+\begin{abstract} 
+Wearable navigation systems typically depend on high-resolution cameras, depth sensors, and large annotated datasets, a dependence that limits their deployability in privacy-sensitive indoor environments and raises development costs. This paper investigates whether directional navigability can be estimated solely from ultra-low-resolution thermal imagery captured by a wearable multi-camera platform. We propose a learning framework in which high-resolution RGB imagery, available only during data collection, automatically generates navigability labels through a pretrained object detector, eliminating manual annotation. Unlike conventional cross-modal approaches, the framework requires neither pixel-accurate cross-modal alignment during training nor geometric calibration at inference, and it does not assume a fixed sensor arrangement. Experiments with three $32\times24$ thermal cameras show that directional navigability is reliably inferred from thermal input alone and that feature-level fusion outperforms pixel-level and decision-level alternatives. A lightweight camera-identity classifier restores near-oracle accuracy when the camera arrangement changes, and every model runs in under 3\,ms per frame on CPU. These results establish ultra-low-resolution thermal sensing as a scalable and privacy-preserving foundation for wearable indoor navigation.
+\end{abstract}
+
+\IEEEpeerreviewmaketitle
+
+\input{sec/intro}
+\input{sec/related}
+\input{sec/methodology}
+\input{sec/experiments}
+\input{sec/results}
+\input{sec/conclusions}
+
+\FloatBarrier
+
+% \section*{Data Availability}
+% The thermal-RGB dataset collected on the wearable platform will be made
+% publicly available upon publication.
+
+\bibliographystyle{IEEEtran}
+\bibliography{zoteroDetection,ZoteroNav,deviceRefs}
+
+\end{document}

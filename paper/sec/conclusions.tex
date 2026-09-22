@@ -1,0 +1,12 @@
+\section{Conclusion}
+
+This paper showed that directional navigability can be learned from three
+$32\times24$ thermal cameras using labels generated automatically by an RGB
+detector present only at training time. Across four architectures,
+feature-level fusion used the limited thermal signal most effectively, and a
+lightweight camera-identity classifier made the system robust to camera
+rearrangement, restoring near-oracle accuracy at negligible latency cost.
+Every model runs in under 3\,ms per frame on CPU, keeping the approach
+practical for embedded wearable deployment. Future work includes validating
+the identity correction on physically re-mounted sensors and extending the
+dataset beyond a single campus.

@@ -1,0 +1,125 @@
+\section{Experimental Setup}
+This section describes the wearable sensing platform, the
+data collection protocol, and the evaluation procedure used
+to assess directional navigability estimation.
+
+
+% \subsection{Wearable Thermal Data Collection Platform}
+% \label{subsec:platform}
+
+% It consists of three ultra-low-resolution thermal cameras, a synchronized RGB camera, and an embedded acquisition unit. 
+% Our wearable platform (Fig.~\ref{fig:pipeline}) is designed around four goals: ultra-low unit cost,
+% privacy-preserving sensing, portability, and label-free thermal supervision.
+% Low unit cost keeps the platform plausible as an everyday aid. Privacy is
+% preserved because the deployed device perceives its surroundings only through
+% low-resolution thermal arrays~\cite{tao2018home,tateno2020privacy}.
+% Portability ensures that the collected data reflect natural egocentric views
+% rather than laboratory conditions. Label-free supervision draws navigability
+% labels from a co-recorded reference view instead of hand annotation.
+
+\subsection{Wearable Platform}
+\label{subsec:platform}
+The wearable platform (Fig.~\ref{fig:pipeline}) is designed to provide low-cost, privacy-preserving multi-view thermal sensing with RGB supervision available only during data collection. 
+It consists of an NVIDIA Jetson
+Nano, three Melexis MLX90640 thermal cameras arranged in a forward-facing fan,
+and a co-mounted Raspberry Pi Camera v2 used only during training. The thermal
+cameras provide left, center, and right views, each capturing a
+$32\times24$ thermal image at 4\,Hz. The RGB camera records synchronized
+high-resolution images used exclusively to generate navigability labels.
+Thermal and RGB streams are synchronized offline before training.
+The platform is assembled from low-cost commodity components with a total
+hardware cost of approximately \$471, substantially lower than comparable
+wearable depth-based navigation systems~\cite{li2025rgbd,bai2019wearable}.
+Thermal and RGB streams are timestamped during acquisition and synchronized
+offline, discarding poorly aligned samples before training.
+
+% A person registers on
+% the camera that faces them, while the other views remain near ambient
+% temperature~\cite{newaz2024low,dubail2023privacy,papagianopoulos2023obstacle}.
+% Each factory-calibrated camera returns a $32\times24$ array of absolute
+% temperatures at 4\,Hz.
+% Because the MLX90640 exposes a single fixed
+% I\textsuperscript{2}C address, a TCA9548A multiplexer selects one camera
+% per transaction.
+
+% \paragraph{RGB supervision camera}
+% A Raspberry Pi Camera v2 is rigidly mounted to the top of the thermal housing,
+% with its optical axis aligned to the central thermal camera, recording
+% $1280\times720$ JPEG frames at 4\,fps. It serves as a training-time supervisory
+% instrument only and is not part of the deployed inference pipeline. Its
+% high-resolution visible-light view provides the navigability labels for the
+% co-recorded thermal frames during training, which avoids hand-annotating the
+% low-resolution thermal data~\cite{devaguptapu2019borrow}.
+
+% \paragraph{Packaging and software}
+% A USB power bank keeps the unit untethered, and a 3D-printed housing fixes the
+% three thermal cameras on a curved front face, with a separate printed case for
+% the Jetson. The platform is built from low-cost commodity modules rather than
+% the depth cameras used in comparable wearable navigation
+% aids~\cite{li2025rgbd,bai2019wearable}, and costs approximately \$471 in
+% parts. An on-board service starts and stops all sensors jointly and serves a
+% live preview for in-field verification, with each sensor driven by an
+% independent capture process so that a single-sensor fault cannot interrupt the
+% remaining streams. Every sample is stamped at capture with a
+% millisecond-resolution Unix timestamp from the shared system clock, which
+% allows frames to be aligned in post-processing without hardware triggering.
+% After each recording, the service maps every frame of the slowest stream to
+% the temporally nearest frame of each remaining stream, retaining the residual
+% offset so that poorly synchronized pairs can be discarded before training.
+\subsection{Data Collection}
+The dataset\footnote{The thermal-RGB dataset collected on the wearable
+platform will be made publicly available upon publication.} spans a variety
+of indoor and outdoor scenes on a university campus, covering three canonical
+navigability states: a free path, a partially obstructed path, and a fully
+obstructed path. A human operator wore
+the platform and walked through each environment at a natural pace while the
+system recorded synchronized thermal and RGB frames. Sessions were recorded
+both with and without other people present, so that the automatic labeler
+encountered a realistic mixture of \textit{clear}, \textit{person}, and
+\textit{other-object} events. Table~\ref{tab:environments} summarizes the
+scene types covered. In total, the platform collected 27,852 synchronized
+RGB frames across all sessions, corresponding to approximately 116 minutes of recording, of which 15,500 frames were used for training. Fig.~\ref{fig:class_dist} shows the resulting class distribution.
+\begin{figure}[t!]
+\begin{center}
+\centering
+\noindent
+$\vcenter{\hbox{%
+\begin{minipage}{0.42\linewidth}
+\centering
+\captionof{table}{Scene types encountered during data collection.}
+\label{tab:environments}
+\scriptsize
+\renewcommand{\arraystretch}{1.0}
+\setlength{\tabcolsep}{2pt}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.52\linewidth}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.21\linewidth}@{}}
+\toprule
+\textbf{Environment} & \textbf{State} & \textbf{People} \\
+\midrule
+Open corridors              & Free    & No  \\
+Stairwells                  & Free    & No  \\
+Covered walkways            & Free    & No  \\
+\midrule
+Doorways                    & Partial & No  \\
+Furniture in~path           & Partial & No  \\
+Corridor+bystander          & Partial & Yes \\
+\midrule
+Crowded~lobbies              & Full    & Yes \\
+Waiting~areas                & Full    & Yes \\
+Building~entrances           & Full    & Yes \\
+\bottomrule
+\end{tabular}
+\end{minipage}%
+}}$%
+\hfill
+$\vcenter{\hbox{%
+\begin{minipage}{0.53\linewidth}
+\centering
+\includegraphics[width=\linewidth]{figs/fig3.png}
+\captionof{figure}{Class distribution across camera directions for the combined
+training and validation split.}
+\label{fig:class_dist}
+\end{minipage}%
+}}$
+
+\end{center}
+\end{figure}
