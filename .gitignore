@@ -1,0 +1,19 @@
+# OS and Python clutter
+.DS_Store
+__pycache__/
+*.pyc
+
+# stray archives and personal documents
+*.zip
+*Project Summary Document*
+.claude/
+
+# human validation: server copies, RGB frames and annotator labels (not for publishing)
+human_validation/server/
+human_validation/sample*/
+human_validation/hv_sample/
+human_validation/hv_key/
+human_validation/labels_*.csv
+
+# output of tools/export_release_labels.py
+release/
