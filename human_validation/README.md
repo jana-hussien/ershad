@@ -54,6 +54,8 @@ are private and kept out of git. It reports inter-annotator κ, how well the
 auto-labels agree with each annotator and with their consensus, and blocked-direction scores for the RGB detector
 and Feature Fusion. CIs come from bootstrapping over frames.
 
+The output of the run reported in the paper is saved in `results.txt`.
+
 ## Sample folder format
 
 ```

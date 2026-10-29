@@ -1,0 +1,64 @@
+300 directions, 100 frames
+val-set class mix: {'clear': 0.439, 'other': 0.403, 'person': 0.158}
+
+== Inter-annotator ==
+class agreement 0.820 [0.777, 0.863]
+class kappa     0.711 [0.634, 0.778]
+blocks agreement 0.803 [0.757, 0.850]
+blocks kappa     0.590 [0.496, 0.683]
+Faiz    clear  other  person
+jana                        
+clear      46     30       4
+other       9    128       6
+person      1      4      72
+
+== Auto-labels vs jana (n=300) ==
+jana        clear  other  person
+auto_label                      
+clear          46     12       0
+other          25    114       0
+person          9     17      77
+agreement          0.790 [0.737, 0.840]
+weighted agreement 0.797 [0.740, 0.849]
+  clear  precision 0.793 (n=58)  recall 0.575 (n=80)
+  person precision 0.748 (n=103)  recall 1.000 (n=77)
+  other  precision 0.820 (n=139)  recall 0.797 (n=143)
+
+== Auto-labels vs Faiz (n=300) ==
+Faiz        clear  other  person
+auto_label                      
+clear          39     19       0
+other          12    126       1
+person          5     17      81
+agreement          0.820 [0.770, 0.867]
+weighted agreement 0.785 [0.722, 0.848]
+  clear  precision 0.672 (n=58)  recall 0.696 (n=56)
+  person precision 0.786 (n=103)  recall 0.988 (n=82)
+  other  precision 0.906 (n=139)  recall 0.778 (n=162)
+
+== Auto-labels vs consensus (n=246) ==
+consensus   clear  other  person
+auto_label                      
+clear          35      8       0
+other           8    109       0
+person          3     11      72
+agreement          0.878 [0.833, 0.920]
+weighted agreement 0.865 [0.806, 0.918]
+  clear  precision 0.814 (n=43)  recall 0.761 (n=46)
+  person precision 0.837 (n=86)  recall 1.000 (n=72)
+  other  precision 0.932 (n=117)  recall 0.852 (n=128)
+
+== Blocked-direction detection vs jana (n=300, 168 blocked) ==
+  RGB detector    {'F1': 0.795, 'Acc': 0.72, 'Prec': 0.674, 'Rec': 0.97, 'FP': 79.0}
+  Feature Fusion  {'F1': 0.8, 'Acc': 0.743, 'Prec': 0.71, 'Rec': 0.917, 'FP': 63.0}
+  detector 'other' directions judged open: 0.381 (n=139)
+
+== Blocked-direction detection vs Faiz (n=300, 201 blocked) ==
+  RGB detector    {'F1': 0.849, 'Acc': 0.777, 'Prec': 0.777, 'Rec': 0.935, 'FP': 54.0}
+  Feature Fusion  {'F1': 0.833, 'Acc': 0.767, 'Prec': 0.802, 'Rec': 0.866, 'FP': 43.0}
+  detector 'other' directions judged open: 0.273 (n=139)
+
+== Blocked-direction detection vs consensus (n=241, 155 blocked) ==
+  RGB detector    {'F1': 0.869, 'Acc': 0.809, 'Prec': 0.779, 'Rec': 0.981, 'FP': 43.0}
+  Feature Fusion  {'F1': 0.868, 'Acc': 0.817, 'Prec': 0.81, 'Rec': 0.935, 'FP': 34.0}
+  detector 'other' directions judged open: 0.282 (n=110)
