@@ -1,0 +1,2 @@
+Model,F1 clear,F1 person,F1 other,Macro F1 (person+other),Shuffled F1 clear,Shuffled F1 person,Shuffled F1 other,Params,CPU ms
+Stitched,0.766 ± 0.015,0.758 ± 0.009,0.724 ± 0.026,0.741 ± 0.017,—,—,—,"147,699",3.33

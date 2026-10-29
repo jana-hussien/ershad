@@ -1,0 +1,25 @@
+model,seed,direction,class,f1
+Threshold (non-learning),0,left,clear,0.5267968425425841
+Threshold (non-learning),0,left,person,0.6125385405960946
+Threshold (non-learning),0,left,other,0.5668523676880223
+Threshold (non-learning),0,middle,clear,0.4938846825859057
+Threshold (non-learning),0,middle,person,0.5901374292643492
+Threshold (non-learning),0,middle,other,0.6288659793814433
+Threshold (non-learning),0,right,clear,0.4645350973906652
+Threshold (non-learning),0,right,person,0.2160919540229885
+Threshold (non-learning),0,right,other,0.49806201550387597
+Threshold (non-learning),0,overall,clear,0.495072207506385
+Threshold (non-learning),0,overall,person,0.47292264129447736
+Threshold (non-learning),0,overall,other,0.5645934541911138
+Threshold (per-direction),0,left,clear,0.5267968425425841
+Threshold (per-direction),0,left,person,0.6150670794633643
+Threshold (per-direction),0,left,other,0.566759388038943
+Threshold (per-direction),0,middle,clear,0.49065420560747663
+Threshold (per-direction),0,middle,person,0.6652519893899205
+Threshold (per-direction),0,middle,other,0.5642184557438795
+Threshold (per-direction),0,right,clear,0.7352572145545797
+Threshold (per-direction),0,right,person,0.2160919540229885
+Threshold (per-direction),0,right,other,0.45414847161572053
+Threshold (per-direction),0,overall,clear,0.5842360875682134
+Threshold (per-direction),0,overall,person,0.4988036742920911
+Threshold (per-direction),0,overall,other,0.528375438466181
