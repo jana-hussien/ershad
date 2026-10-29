@@ -1,21 +1,43 @@
 \section{Related Work}
-This section reviews the literature most closely related to wearable navigability estimation using privacy-preserving thermal sensing and multi-view perception.
+
 \subsection{Wearable Navigation and Traversability Estimation}
-Existing wearable navigation systems estimate traversable space with sensors
-that are accurate but hardware-heavy and privacy-invasive. Most rely on RGB
-cameras~\cite{11540071}, depth sensors, or LiDAR~\cite{Liu_2021_ICCV} to
-detect obstacles and identify safe directions for movement. RGB-based methods
-infer navigability from visual
-appearance~\cite{muDynamicObstacleAvoidance2024}, whereas depth- and
-LiDAR-based systems rely on explicit geometric measurements of the
-environment. These sensing requirements increase hardware complexity and raise
-privacy concerns for continuous wearable
+Existing wearable navigation systems estimate traversable space with RGB
+cameras~\cite{11540071}, depth sensors, or LiDAR~\cite{Liu_2021_ICCV},
+inferring navigability from visual appearance~\cite{muDynamicObstacleAvoidance2024}
+or explicit geometry. These sensors are accurate but hardware-heavy, and they
+raise privacy concerns for continuous wearable
 deployment~\cite{rinta-homiHowLowCan2021}.
 
 \subsection{Privacy-Preserving and Ultra-Low-Resolution Thermal Sensing}
+Thermal sensing largely avoids capturing identifiable imagery~\cite{rinta-homiHowLowCan2021,papagianopoulos2023obstacle}.
+DareDevil~\cite{gaoDeployablePrivacyPreservingThermalBased2025} uses a paired
+RGB camera and a pretrained YOLOv8 detector to label thermal frames
+automatically and then detects obstacles from thermal input alone, but it uses
+a single $640\times480$ thermal camera and binary obstacle detection, leaving
+directional navigability, multi-camera thermal perception, and ultra-low
+resolution unexplored. Ultra-low-resolution thermal arrays further improve
+privacy, cost, and power efficiency, but their limited spatial resolution has
+confined prior work to occupancy detection~\cite{rinta-homiHowLowCan2021},
+human monitoring~\cite{rezaeiUnobtrusiveHumanActivity2023}, and motion
+estimation, such as thermal-gyroscope
+odometry~\cite{mohsenDeepFusionUltraLowResolution2025}. Whether such sensing
+alone can support directional navigability on a wearable multi-camera rig has
+not been studied.
 
-Privacy-preserving thermal sensing has emerged as a promising alternative to RGB-based perception for wearable navigation, enabling continuous environmental sensing while reducing concerns associated with capturing identifiable imagery~\cite{papagianopoulos2023obstacle}. Recent work has demonstrated the feasibility of thermal-based obstacle detection using standard-resolution thermal cameras. In particular, DareDevil~\cite{gaoDeployablePrivacyPreservingThermalBased2025} leverages a paired RGB camera and a pretrained YOLOv8 detector to automatically label thermal frames, eliminating the need for manual annotation while performing thermal-only obstacle detection at inference. However, DareDevil operates on imagery from a single standard-resolution thermal camera ($640\times480$) and formulates the task as binary obstacle detection. It therefore does not investigate directional navigability estimation, multi-camera thermal perception, or the challenges posed by ultra-low-resolution thermal sensing.
+\subsection{Multi-View Sensor Fusion and Placement Robustness}
+Multi-view systems combine cameras to increase coverage and perception
+quality~\cite{zhuAutonomousRobotNavigation2020,olagokeLiteratureSurveyMultiCamera2020},
+typically within a unified pipeline~\cite{Zheng_2023_WACV}. Where and how to
+combine the views varies across applications, and most systems assume a fixed
+camera configuration. That assumption is hard to maintain on
+wearable platforms, where cameras are repositioned or
+reattached~\cite{kuoRedesigningSLAMArbitrary2020}, and changing the mapping
+between cameras and network inputs can degrade fusion models that exploit
+camera-specific spatial relationships. We compare fusion strategies for
+ultra-low-resolution thermal navigability and evaluate their robustness to
+camera permutations.
 
+% ---- earlier drafts (kept for reference, not printed) ----
 % DareDevil~\cite{gaoDeployablePrivacyPreservingThermalBased2025} is the closest
 % precedent to our labeling pipeline, auto-labeling thermal frames from a paired
 % RGB camera through a pretrained YOLOv8 detector and thereby avoiding manual
@@ -25,11 +47,7 @@ Privacy-preserving thermal sensing has emerged as a promising alternative to RGB
 % time. It does not address the extreme spatial compression of a
 % $32\times24$-pixel array, multi-camera fusion, or robustness to sensor
 % placement.
-
-Ultra-low-resolution thermal arrays further improve privacy, cost, and power efficiency, but introduce substantially greater perception challenges due to their extremely limited spatial resolution. Existing work has therefore focused on tasks such as occupancy detection~\cite{rinta-homiHowLowCan2021}, human monitoring~\cite{rezaeiUnobtrusiveHumanActivity2023}, and motion estimation rather than scene understanding or navigability. For example, Mohsen et al.~\cite{mohsenDeepFusionUltraLowResolution2025} combine thermal imagery with gyroscope measurements to compensate for the limited visual information available for odometry.
 % while Naser et al.~\cite{naser2022calibration} assume a fixed, calibrated sensor geometry. 
-Whether ultra-low-resolution thermal sensing alone can support directional navigability estimation in a wearable multi-camera setting remains largely unexplored.
-
 % tete line of work uses ultra-low-resolution thermal sensors (e.g.,
 % $32\times24$ arrays, on the order of \$30 per unit) as a low-power,
 % lighting-invariant alternative to RGB and depth sensing. Such sensors are too
@@ -42,7 +60,6 @@ Whether ultra-low-resolution thermal sensing alone can support directional navig
 % geometry. In contrast, this work targets discrete navigability classification
 % rather than continuous odometry, and removes the reliance on precise geometric
 % calibration at inference that these systems retain.
-
 % Removed, not very relevant
 % \subsection{Automatic Label Generation}
 % Manually annotating walkable regions is expensive and does not scale to
@@ -55,14 +72,6 @@ Whether ultra-low-resolution thermal sensing alone can support directional navig
 % odometry. We apply the same philosophy in a cross-modal setting, where
 % RGB-derived object detections supervise a thermal-only model solely during
 % data collection and the RGB sensor is entirely absent at deployment.
-
-\subsection{Multi-View Sensor Fusion and Placement Robustness}
-
-Multi-view perception systems combine observations from multiple cameras to increase environmental coverage and improve perception quality~\cite{zhuAutonomousRobotNavigation2020,olagokeLiteratureSurveyMultiCamera2020}. Existing systems typically aggregate information from multiple cameras within a unified perception pipeline~\cite{Zheng_2023_WACV}, although the choice of where and how to combine observations varies across applications. In contrast to prior work, this paper investigates how different fusion strategies perform for directional navigability estimation from wearable ultra-low-resolution thermal sensing, while also evaluating their robustness to changes in camera placement.
-
-Wearable multi-camera platforms introduce an additional deployment challenge: the physical arrangement of sensors may change between training and deployment as cameras are repositioned or reattached. Existing multi-camera perception systems are typically designed for fixed camera configurations, an assumption that simplifies geometric reasoning and sensor fusion but is difficult to maintain in wearable platforms~\cite{kuoRedesigningSLAMArbitrary2020}. Consequently, changing the mapping between physical cameras and network input channels can degrade the performance of fusion models that exploit camera-specific spatial relationships. In this work, we evaluate the robustness of representative fusion strategies to camera permutations and investigate lightweight mechanisms for maintaining performance under changing sensor arrangements.
-
-Taken together, the literature reviewed above has not established whether wearable ultra-low-resolution multi-view thermal sensing can reliably support directional navigability estimation under realistic deployment conditions.
 % Multi-camera perception systems typically assume a fixed mapping between
 % physical sensor position and input channel, an assumption that breaks when
 % sensors shift or are reattached in a different order on a wearable rig.
@@ -75,5 +84,4 @@ Taken together, the literature reviewed above has not established whether wearab
 % is larger still, since the supervisory RGB detector and the deployed
 % $32\times24$ thermal arrays share no feature space and no geometric alignment
 % at inference time. 
-
 %We contribute a direct comparison of three fusion strategies for an ultra-low-resolution, three-camera array, together with an explicit treatment of camera-slot permutation robustness.

@@ -1,12 +1,11 @@
 \section{Introduction}
 
-Wearable indoor navigation systems require reliable perception of navigable
-directions while remaining inexpensive, privacy-preserving, and easy to
-deploy~\cite{yuNaVIPComputerVisionBased2026}. Existing approaches predominantly rely on RGB cameras, depth sensors,
-or LiDAR, which provide rich visual or geometric information but increase
-hardware cost and raise privacy concerns. Training these systems also requires
-large annotated datasets, and multi-camera platforms often assume a
-fixed sensor arrangement established during calibration~\cite{kuoRedesigningSLAMArbitrary2020}.
+Wearable indoor navigation systems need reliable perception of navigable
+directions while staying inexpensive, privacy-preserving, and easy to
+deploy~\cite{yuNaVIPComputerVisionBased2026}. Most rely on RGB cameras, depth
+sensors, or LiDAR, which add hardware cost, raise privacy concerns, and need
+large annotated datasets, and multi-camera platforms often assume a sensor
+arrangement fixed at calibration~\cite{kuoRedesigningSLAMArbitrary2020}.
 
 
 % Wearable navigation aids for visually impaired users inherit three costly
@@ -14,15 +13,12 @@ fixed sensor arrangement established during calibration~\cite{kuoRedesigningSLAM
 % datasets, and a fixed, calibrated camera layout. A sensor that shifts on the
 % rig violates the geometric assumptions on which these pipelines rest.
 
-Ultra-low-resolution thermal cameras eliminate many of the deployment barriers
-of conventional visual sensors, but raise a fundamental question: can reliable
-navigability be inferred from such limited observations? A $32\times24$
-thermal array is inexpensive, consumes little power, and does not capture
-identifiable appearance. However, its limited spatial resolution
-removes much of the visual information used by conventional perception
-algorithms, making environment understanding substantially more difficult.
-The limited field of view and information content of each thermal array
-motivate the use of multiple cameras to improve environmental coverage.
+A $32\times24$ thermal array removes many of these barriers: it is
+inexpensive, consumes little power, and does not capture identifiable
+appearance. Its low resolution, however, removes much of the information
+conventional perception relies on, and its narrow field of view motivates
+using several cameras for coverage. This raises a fundamental question: can
+reliable navigability be inferred from such limited observations?
 
 % Ultra-low-resolution thermal cameras offer a cheap and inherently private
 % alternative, but at a steep perceptual cost. A $32\times24$ array costs on the
@@ -35,13 +31,11 @@ motivate the use of multiple cameras to improve environmental coverage.
 % at inference.
 
 
-This paper investigates whether ultra-low-resolution multi-view thermal
-sensing provides sufficient information to estimate directional
-navigability. To answer this question, we use a high-resolution RGB camera
-only during data collection to automatically generate supervisory labels for
-synchronized thermal observations. During deployment, the system operates
-exclusively on thermal imagery, requiring neither RGB input nor geometric
-calibration.
+To answer it, we use a high-resolution RGB camera only during data
+collection, to label synchronized thermal observations automatically; at
+deployment the system runs on thermal imagery
+alone, with neither RGB input nor geometric calibration
+(Fig.~\ref{fig:pipeline}).
 
 
 % Our framework therefore confines RGB to the data-collection stage
@@ -55,7 +49,7 @@ calibration.
 % so inference requires neither geometric calibration nor a fixed camera-to-slot
 % mapping.
 
-This paper makes four contributions. First, we introduce a training framework that uses RGB supervision only during data collection to enable thermal-only directional navigability estimation without manual thermal annotation. Second, we present a systematic comparison of representative pixel-, feature-, and decision-level fusion strategies for ultra-low-resolution thermal sensing. Third, we evaluate robustness to changes in camera placement and introduce a lightweight camera-identity correction that maintains performance under camera permutations. Finally, we contribute a wearable multi-camera dataset of synchronized RGB and ultra-low-resolution thermal observations to support future research in privacy-preserving indoor navigation.
+This paper makes four contributions: a training framework that uses RGB supervision only during data collection, enabling thermal-only directional navigability estimation without manual annotation; a systematic comparison of pixel-, decision-, and feature-level fusion for ultra-low-resolution thermal sensing; an evaluation of robustness to camera placement with a lightweight camera-identity correction that maintains performance under camera permutations; and a wearable multi-camera dataset of ultra-low-resolution thermal observations with their automatically generated labels, to support future research in privacy-preserving indoor navigation.
 
 
 % We compare pixel-level stitching, decision-level output fusion, and

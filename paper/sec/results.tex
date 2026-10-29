@@ -1,50 +1,130 @@
 \section{Results}
 \label{sec:results}
 
-\subsection{Navigability Estimation Performance}
+\subsection{Navigability Estimation and Fusion Strategy}
 
-All four architectures recover navigability well above chance from raw
-$32\times24$ tiles, and Feature Fusion leads in every camera direction
-(Fig.~\ref{fig:arch_f1}). On validation, Feature Fusion attains overall
-per-class $F_1$ of about $0.81$ (\textit{clear}), $0.83$ (\textit{person}),
-and $0.80$ (\textit{other object}). The stitched-panorama and output-fusion baselines sit near $0.73$--$0.78$ overall and are weakest on person detection from the right camera.
+All models recover navigability well above chance from raw $32\times24$
+tiles, and Feature Fusion is the strongest in every class and camera direction
+(Fig.~\ref{fig:arch_f1}), with overall per-class $F_1$ (mean over directions) of $0.82$
+(\textit{clear}), $0.82$ (\textit{person}), and $0.80$ (\textit{other object})
+on validation. The stitched-panorama and output-fusion baselines reach
+$0.72$--$0.77$ overall and are weakest on person detection from the right
+camera ($0.61$ and $0.62$). Feature Fusion's lead holds even when
+decision-level fusion is given its backbone and head settings (2.03M
+parameters): it stays ahead on \textit{clear}, by 1.4 points overall and 3.4 in
+the middle direction, and on macro $F_1$ (0.811 vs.\ 0.808), with 8.5\% fewer parameters (1.86M
+vs.\ 2.03M). Concatenating feature
+maps at every level preserves spatial cues that stitching discards in the warp
+and that output fusion never sees, consistent with the gain concentrating on
+free space. On the separate held-out test session, Feature Fusion with the
+correct camera order reaches $0.92$, $0.92$, and $0.90$
+(Fig.~\ref{fig:ff_shuffle}, oracle), so the configuration selected on
+validation carries over to a session never used for training or model
+selection; its higher scores likely reflect that session's scene mix. On a cloud CPU, a single-sample forward pass takes at most
+2.37\,ms (Feature Fusion) plus 0.21\,ms for the identity classifier, far below
+the 250\,ms frame period at 4\,Hz.
 
+\subsection{Comparison with Additional Baselines}
 
+We train three further baselines with the same split, labels, and recipe. All
+learned models here and in Fig.~\ref{fig:arch_f1} are averaged over three
+seeds, with standard deviations of at most 0.026 in $F_1$ (at most 0.007 for
+Feature Fusion and the no-fusion model). The no-fusion model is Feature Fusion
+without the cross-camera connection: each direction is predicted from its own
+tile by a per-direction head. The permutation-equivariant model appends the
+mean and maximum of the pooled tile features across cameras and applies one
+shared head to every tile~\cite{zaheer2017deepsets}. The threshold baseline
+labels a tile \textit{person} when its warmest pixel lies in a body-temperature
+range and exceeds the tile median by a margin, and \textit{other object} when
+its temperature standard deviation exceeds a threshold; thresholds are
+grid-searched on the training split for macro $F_1$ over all three classes.
 
-\subsection{Fusion Strategy Analysis}
+Removing fusion costs accuracy in every class and direction: the no-fusion
+model reaches 0.79, 0.81, and 0.78 overall, and for each class Feature
+Fusion's weakest seed outperforms the no-fusion model's strongest. The gain (2.9, 1.2, and 2.2
+points) is largest for \textit{clear}, the decision a navigation aid acts on,
+and peaks at 5.6 points in the middle direction, the only camera with
+neighbors on both sides. Neighboring views appear to help resolve free space,
+which is ambiguous in a single tile, while a warm body is easy to spot in one.
+Feature Fusion does this with fewer parameters at the same CPU latency. The threshold baseline reaches only 0.52 macro $F_1$ (0.50 on
+\textit{clear}), and per-direction thresholds do not help (0.51).
 
-Feature-level fusion outperforms both pixel-level stitching and decision-level
-output fusion. Concatenating feature maps across cameras at each backbone level
-preserves spatial cues that stitching discards in the warp and that output
-fusion never observes, since it merges only logits. Feature Fusion requires
-additional backbone passes, but at this tile size the accuracy gain justifies
-its use in the shuffle experiments below. On a single-sample CPU forward pass,
-Model~1, Model~2, and Feature Fusion take 1.36, 0.80, and 2.37\,ms,
-respectively, and the camera-identity classifier adds a further 0.21\,ms.
-Every configuration remains under 3\,ms, comfortably within budget for
-real-time inference on a wearable device.
+\subsection{Human Validation of Navigability}
+\begin{table}[t]
+\centering
+\caption{Blocked-direction detection (\textit{person} or \textit{other
+object} counts as blocked) against human judgments on the 241 directions where
+both annotators agree (155 blocked).}
+\label{tab:human_val}
+\footnotesize
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Model} & \textbf{$F_1$} & \textbf{Acc.} & \textbf{Prec.} & \textbf{Rec.} \\
+\midrule
+RGB detector (full res.) & 0.87 & 0.81 & 0.78 & 0.98 \\
+Feature Fusion ($32\times24$) & 0.87 & 0.82 & 0.81 & 0.94 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+To check that the labels and the model capture what matters for navigation,
+two annotators labeled 100 validation frames (300 directions) from the RGB
+images without seeing the automatic labels. For each direction, they recorded
+what it contains (\textit{clear}, \textit{person}, or \textit{other object})
+and whether it blocks the path. Frames came from all 12 sessions, with quotas
+ensuring enough \textit{person} and \textit{other object} directions; the
+annotators agreed on 82\% of classes ($\kappa = 0.71$) and 80\% of blocking
+judgments ($\kappa = 0.59$); we score where they agree.
+
+For navigation, the key question is whether a direction is blocked. Here the
+$32\times24$ thermal model matches the full-resolution RGB detector that
+trained it (Table~\ref{tab:human_val}): it catches 93.5\% of blocked
+directions, reaches the same $F_1$ of 0.87, and raises 21\% fewer false
+alarms on open directions. The detector's extra false alarms come from
+flagging any object in a footprint, even one that does not block the path:
+28\% of its \textit{other object} directions were judged open. Feature
+Fusion is likely less affected because distant or thermally indistinct objects
+that the detector flags are hardly visible at $32\times24$.
+
+The automatic labels are also largely consistent with human judgment: they
+agree with the annotators' shared label on 86.5\% of directions (95\% CI
+80.6--91.8\%, weighted to the validation class mix), and the detector missed
+no person both annotators saw.
 
 \subsection{Camera Arrangement Robustness}
-\begin{figure}[!t]
+
+
+
+Shuffling camera slots collapses uncorrected Feature Fusion, and the identity
+classifier restores it to near-oracle accuracy on the held-out test set
+(Fig.~\ref{fig:ff_shuffle}). Without correction, overall per-class $F_1$ drops
+to $0.62$ (\textit{clear}), $0.30$ (\textit{person}), and $0.52$
+(\textit{other object}), because the fixed-order projection layers encode slot
+position. The classifier assigns each tile to its slot with 98.7\% accuracy on the same
+988 frames (chance: 33.3\%), and re-sorting with it recovers $0.90$--$0.92$ for
+all three classes, within 0.01 of the oracle. The tiles themselves carry direction information;
+what breaks under shuffling is the slot ordering, not the thermal
+representation.
+
+\begin{figure}[!htb]
     \centering
-  \includegraphics[width=0.9\linewidth]{figs/fig4.png}
-  \caption{Overall per-class $F_1$ of Feature Fusion with shuffle correction
-  (FF + Shuffle) on the held-out test set (988 frames, not seen during
-  training or validation), under blind, classifier, and oracle re-sorting.}
+  \includegraphics[width=0.9\linewidth]{figs/fig4_new.png}
+  % \includegraphics[width=0.9\linewidth]{figs/fig4.png}   % previous colors
+  \caption{Overall per-class $F_1$ of Model~4 under camera shuffling on the
+  held-out test set (988 frames, not seen during training or validation), with
+  no correction (blind), classifier re-sorting, and oracle re-sorting.}
   \label{fig:ff_shuffle}
 \end{figure}
 
 
-Shuffling camera slots collapses uncorrected Feature Fusion, and the
-lightweight identity classifier restores it to near-oracle accuracy on the
-held-out test set (Fig.~\ref{fig:ff_shuffle}). With no correction (blind),
-overall per-class $F_1$ drops to $0.62$ (\textit{clear}), $0.30$
-(\textit{person}), and $0.52$ (\textit{other object}), because the fixed-order
-projection layers in Model~3 encode slot position. The camera-identity
-classifier used to undo this reaches 98.7\% accuracy on the 3-way
-slot-identification task on the same 988-frame held-out test set, against a
-33.3\% random-guess baseline. Re-sorting the tiles with this classifier before
-inference recovers an overall $F_1$ of approximately $0.90$--$0.92$ across all
-three classes, matching the ground-truth-identity oracle to within rounding.
-The backbone features carry direction information. What breaks under shuffle
-is the slot ordering, not the thermal representation itself.
+The permutation-equivariant baseline comes within about half a point of Feature Fusion
+in macro $F_1$ (0.805 vs.\ 0.811), and on validation its predictions are
+unchanged under all five non-identity permutations without any correction. The
+no-fusion model offers no such protection: its direction-specific heads
+collapse under shuffling as well (0.61, 0.42, and 0.49 on validation). Because the
+equivariant model's outputs follow the input slots, it still cannot tell which
+direction each tile faces, so reporting that the left path is blocked requires
+camera identity in either design. For Feature Fusion the classifier also
+restores accuracy, allowing the slightly stronger model to be used when
+camera inputs are reordered.
