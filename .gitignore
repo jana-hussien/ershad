@@ -8,12 +8,12 @@ __pycache__/
 *Project Summary Document*
 .claude/
 
-# human validation: server copies, RGB frames and annotator labels (not for publishing)
+# human validation: server copies and RGB frames (people are visible, not for publishing)
 human_validation/server/
 human_validation/sample*/
 human_validation/hv_sample/
-human_validation/hv_key/
-human_validation/labels_*.csv
+# earlier draft of the labels; labels_jana.csv is the final version
+human_validation/labels_jana_original.csv
 
 # output of tools/export_release_labels.py
 release/

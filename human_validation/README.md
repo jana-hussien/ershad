@@ -48,9 +48,10 @@ An all-clear frame takes three keystrokes: `1 1 1`.
 ## Analysis
 
 Put each annotator's export in this folder as `labels_<name>.csv`, then run
-`python human_validation/analyze_labels.py` from the repo root. It also needs `hv_key/` (from the
-sample build) and `kaggle_retrain/results/main_run/ff_val_predictions.csv`. The labels and the key
-are private and kept out of git. It reports inter-annotator κ, how well the
+`python human_validation/analyze_labels.py` from the repo root. It also reads `hv_key/` (the answer key
+from the sample build) and `kaggle_retrain/results/main_run/ff_val_predictions.csv`. The labels and
+the key are committed, so the analysis runs from a fresh clone. The sample images (`hv_sample/`)
+are not, because they are RGB photos with people in them. It reports inter-annotator κ, how well the
 auto-labels agree with each annotator and with their consensus, and blocked-direction scores for the RGB detector
 and Feature Fusion. CIs come from bootstrapping over frames.
 

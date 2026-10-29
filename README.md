@@ -76,5 +76,4 @@ The raw recordings and homographies are on Kaggle (`janahussien90/rgb3thermals-f
 as Kaggle inputs. The cluster pipeline downloads its own copy with
 `cluster_pipeline/download_dataset_from_kaggle.sh`.
 
-Private files stay out of git: annotator labels, the human-validation answer key, and RGB samples
-(see `.gitignore`).
+RGB images stay out of git for privacy, including the human-validation sample (see `.gitignore`).

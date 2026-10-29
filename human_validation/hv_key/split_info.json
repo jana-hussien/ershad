@@ -1,0 +1,27 @@
+{
+ "parts": [
+  "part1",
+  "part2",
+  "part3",
+  "part4",
+  "part5",
+  "part8",
+  "part9",
+  "part11",
+  "part12",
+  "part13",
+  "part14",
+  "part15"
+ ],
+ "n_sync_rows": 15868,
+ "n_train": 12697,
+ "n_val": 3171,
+ "n_val_usable": 3126,
+ "seed": 42,
+ "quotas": [
+  35,
+  35,
+  30
+ ],
+ "min_gap_anchors": 15
+}
