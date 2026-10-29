@@ -1,5 +1,7 @@
 \section{Methodology}
 
+Fig. 1 provides an overview of the proposed framework, comprising two stages: RGB-assisted automatic labeling and model training, followed by thermal-only inference with camera-identity correction. The following sections describe the labeling process and the evaluated fusion architectures.
+
 \subsection{Problem Formulation}
 
 At each timestep the rig outputs three $32\times24$ thermal tiles
@@ -16,7 +18,7 @@ paired RGB stream (Section~\ref{sec:labels}).
 \subsection{RGB-Based Automatic Label Generation}
 \label{sec:labels}
 
-Our labeling builds on DareDevil~\cite{gaoDeployablePrivacyPreservingThermalBased2025}. Unlike its single-camera formulation, detections are assigned to the three thermal cameras by coarse footprint overlap rather than pixel-accurate RGB-to-thermal alignment, using one RGB-to-thermal homography per camera, calibrated once when the rig is built.
+Our labeling builds on DareDevil~\cite{gaoDeployablePrivacyPreservingThermalBased2025}. Unlike its single-camera formulation, detections are assigned to the three thermal cameras using coarse footprint overlap rather than pixel-accurate RGB-to-thermal alignment. This requires one RGB-to-thermal homography per camera, calibrated once during rig assembly, but no geometric calibration is needed at inference.
 
 
 % We follow Gao~\textit{et al.}'s
@@ -50,8 +52,9 @@ views are combined: pixel-, decision-, and feature-level fusion, plus
 feature-level fusion with camera-identity correction. Except for the stitched
 baseline, all models share a convolutional backbone whose depth, width
 multiplier, and activation are set during model selection and which returns
-multi-scale feature maps; Fig.~\ref{fig:arch_f1} compares the three fusion
-levels.
+multi-scale feature maps.
+% Fig.~\ref{fig:arch_f1} compares the three fusion
+% levels.
 % Except for the stitched-panorama baseline, all models share the
 % same convolutional backbone.
 

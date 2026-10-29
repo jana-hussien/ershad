@@ -13,12 +13,15 @@ arrangement fixed at calibration~\cite{kuoRedesigningSLAMArbitrary2020}.
 % datasets, and a fixed, calibrated camera layout. A sensor that shifts on the
 % rig violates the geometric assumptions on which these pipelines rest.
 
-A $32\times24$ thermal array removes many of these barriers: it is
+Ultra-low-resolution thermal cameras offer an alternative that addresses many of these deployment constraints.
+A $32\times24$ thermal array is
 inexpensive, consumes little power, and does not capture identifiable
 appearance. Its low resolution, however, removes much of the information
-conventional perception relies on, and its narrow field of view motivates
-using several cameras for coverage. This raises a fundamental question: can
-reliable navigability be inferred from such limited observations?
+conventional perception relies on, while its limited field of view
+motivates using multiple cameras for coverage.
+
+% This raises a fundamental question: can
+% reliable navigability be inferred from such limited observations?
 
 % Ultra-low-resolution thermal cameras offer a cheap and inherently private
 % alternative, but at a steep perceptual cost. A $32\times24$ array costs on the
@@ -30,14 +33,14 @@ reliable navigability be inferred from such limited observations?
 % from thermal tiles alone, with no manual labels and no geometric calibration
 % at inference.
 
+This paper investigates whether ultra-low-resolution multi-view thermal
+sensing provides sufficient information for reliable directional
+navigability estimation. As illustrated in Fig.~\ref{fig:pipeline}, we use a high-resolution RGB camera only during data collection to automatically label synchronized thermal observations. At deployment, the system relies exclusively on thermal imagery, without requiring RGB input or geometric calibration.
 
-To answer it, we use a high-resolution RGB camera only during data
-collection, to label synchronized thermal observations automatically; at
-deployment the system runs on thermal imagery
-alone, with neither RGB input nor geometric calibration
-(Fig.~\ref{fig:pipeline}).
-
-
+% We use a high-resolution RGB camera only during data
+% collection, to label synchronized thermal observations automatically; at
+% deployment the system runs on thermal imagery
+% alone, with neither RGB input nor geometric calibration.
 % Our framework therefore confines RGB to the data-collection stage
 % (Fig.~\ref{fig:pipeline}). A
 % high-resolution camera on the wearable rig records frames synchronously with
@@ -49,7 +52,9 @@ alone, with neither RGB input nor geometric calibration
 % so inference requires neither geometric calibration nor a fixed camera-to-slot
 % mapping.
 
-This paper makes four contributions: a training framework that uses RGB supervision only during data collection, enabling thermal-only directional navigability estimation without manual annotation; a systematic comparison of pixel-, decision-, and feature-level fusion for ultra-low-resolution thermal sensing; an evaluation of robustness to camera placement with a lightweight camera-identity correction that maintains performance under camera permutations; and a wearable multi-camera dataset of ultra-low-resolution thermal observations with their automatically generated labels, to support future research in privacy-preserving indoor navigation.
+This paper makes four contributions: a training framework that uses RGB supervision only during data collection, enabling thermal-only directional navigability estimation without manual annotation; 
+a systematic comparison of fusion strategies at the pixel,
+feature, and decision levels for ultra-low-resolution thermal sensing; an evaluation of robustness to camera placement with a lightweight camera-identity correction that maintains performance under camera permutations; and a wearable multi-camera dataset of ultra-low-resolution thermal observations with their automatically generated labels, to support future research in privacy-preserving indoor navigation.
 
 
 % We compare pixel-level stitching, decision-level output fusion, and
