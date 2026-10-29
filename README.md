@@ -1,152 +1,80 @@
-# DareDevil deepnet pipeline
+# Directional navigability from low-resolution thermal cameras
 
-Trains and evaluates the directional-navigability models (Baseline 1,
-Baseline 2, Feature Fusion + a 15-variant ablation, and Feature Fusion +
-camera-identity shuffle correction) as a 10-stage Slurm pipeline on CMU-Q's
-`gpujobs.qatar.cmu.edu` deepnet cluster.
+This repo holds the code, results and paper for *Directional Navigability Estimation from
+Ultra-Low-Resolution Multi-View Thermal Sensing* (Moazam, Hussien, Al-Taweel, Ramalho, Ansari,
+Feo-Flushing; CMU Qatar).
 
-## Repo layout
+**The project in short.** A wearable rig carries three 32×24 thermal cameras (left, middle, right)
+and one RGB camera. For each direction we predict whether the path is clear, blocked by a person,
+or blocked by another object. The RGB camera is only used while collecting data: a YOLOv8 detector
+on the RGB frames produces the training labels automatically, so nothing is labeled by hand. At
+run time the models see thermal images only.
 
-| Path | What it is |
+**Dataset:** [TartanThermals Navigability Dataset on Hugging Face](https://huggingface.co/datasets/Faiz3005/TartanThermals_Navigability_Dataset)
+(thermal frames, labels and homographies; RGB frames are withheld for privacy).
+
+## Where to find things
+
+| Folder | What's in it | Start here |
+|---|---|---|
+| [`paper/`](paper/) | LaTeX source of the paper, kept in sync with Overleaf | `main.tex` |
+| [`paper_figures/`](paper_figures/) | Scripts that draw the paper's figures | [README](paper_figures/README.md) |
+| [`cluster_pipeline/`](cluster_pipeline/) | The original training pipeline (10 Slurm jobs on CMU-Q's deepnet cluster): baselines, Feature Fusion ablation, camera-shuffle tests | [README](cluster_pipeline/README.md) |
+| [`kaggle_retrain/`](kaggle_retrain/) | Camera-ready retrain on Kaggle: all models on one split, 3 seeds, plus the extra baselines reviewers asked for | [README](kaggle_retrain/README.md) |
+| [`human_validation/`](human_validation/) | Check of the auto-labels against two human annotators | [README](human_validation/README.md) |
+| [`tools/`](tools/) | Small helpers: export labels for the dataset release, sync `paper/` with Overleaf | see below |
+| [`poster/`](poster/) | SURA poster (PDF) | |
+
+## Which results come from where
+
+The paper draws on two sets of training runs, so it helps to know which is which.
+
+| In the paper | Comes from |
 |---|---|
-| `scripts/` | One `.ipynb` + one `.py` per stage. The `.py` is what Slurm actually runs; the `.ipynb` is the same code kept for reference / interactive re-runs. |
-| `slurm/` | One `.sbatch` per stage, plus `submit_pipeline.sh` to submit them all. |
-| `setup_environment.sh`, `download_dataset_from_kaggle.sh` | One-time cluster setup (see below). |
-| `paper_figures/` | The figures embedded in the paper and the scripts that regenerate them — see [`paper_figures/README.md`](paper_figures/README.md). |
-| `workspace_output/` | Archived output of a past full pipeline run (figures, tables, logs) — a historical snapshot, not something you regenerate. |
+| Fig. 2 (fusion strategies by direction) and the comparison with extra baselines (single-camera, permutation-equivariant, threshold) | `kaggle_retrain/` |
+| Feature Fusion settings (depth, width, activation, head, dropout), chosen by ablation | `cluster_pipeline/` stages 3a to 4 |
+| Fig. 4 (camera shuffle and identity classifier, held-out session) | models trained by `cluster_pipeline/`, evaluated with `paper_figures/figures-creation.ipynb`; numbers saved in `paper_figures/figure_metrics_correct.json` |
+| Fig. 3 (class distribution) | label cache in `kaggle_retrain/results/main_run/` |
+| Human validation numbers (agreement, kappa) | `human_validation/analyze_labels.py` |
 
-## Prerequisites
+## Common tasks
 
-- An account on `gpujobs.qatar.cmu.edu` and your Andrew ID.
-- `setup_conda_env.sh` and `DeepNet_instructions.md` — **provided by the
-  course, not included in this repo.** `setup_environment.sh` calls the
-  former and assumes you have both.
-- A Kaggle API token (`kaggle.json`), from
-  [kaggle.com/settings](https://www.kaggle.com/settings) → "Create New
-  Token" — needed by `download_dataset_from_kaggle.sh`.
-
-## Cluster constraints this pipeline is built around
-
-- **`jupyter nbconvert --execute` doesn't work on this system.** Every
-  stage ships as both a `.ipynb` and a `.py` (converted via the exact JSON
-  method from `DeepNet_instructions.md` Step 6) — the `.py` is what Slurm
-  runs.
-- **Max 4 concurrent jobs per user.** `submit_pipeline.sh` still submits all
-  7 of Stage 1/2/3a-3e at once; Slurm queues anything past 4 automatically,
-  no script changes needed — it just means a longer wall-clock for that
-  block (see the time estimate below).
-- **`--mcs-label` and a time limit are required** on every job — every
-  `.sbatch` file already has both.
-- **48-hour max job time** — every stage here is well under that
-  individually.
-
-## Setup (run once)
+**Edit the paper.** Edit on Overleaf or in `paper/`, then sync:
 
 ```bash
-ssh ANDREWID@gpujobs.qatar.cmu.edu
-# upload setup_environment.sh and download_dataset_from_kaggle.sh first (scp from PowerShell),
-# or paste their contents directly via a heredoc on the SSH session
-bash setup_environment.sh                  # creates conda env, installs packages, makes dirs
-
-scp kaggle.json ANDREWID@gpujobs.qatar.cmu.edu:~/    # from your local machine, once
-bash download_dataset_from_kaggle.sh       # pulls the dataset straight from Kaggle, no local hop
+git overleaf-pull           # bring Overleaf edits into paper/, review, commit
+git overleaf-push ["msg"]   # send the committed paper/ to Overleaf
 ```
 
-Then upload everything in `scripts/` and `slurm/` to
-`/data1/ANDREWID/daredevil_run/scripts/` and
-`/data1/ANDREWID/daredevil_run/slurm/` respectively (scp from PowerShell, or
-`git clone` / `rsync` if deepnet has access to wherever you're hosting these
-files).
-
-**Before submitting anything, edit these placeholders:**
-- `ANDREWID` and `COURSE_LABEL` in every file under `slurm/*.sbatch`
-- `ENV_NAME` in every `.sbatch` (must match what you used in
-  `setup_environment.sh`)
-- `SHARED_DIR`, `DATA_ROOT`, `HOMOGRAPHY_DIR`, `RGB_HOMOGRAPHY_DIR` in every
-  `scripts/*.py` AND the matching `scripts/*.ipynb` (both must agree, since
-  the executed-notebook assembler reads the `.ipynb` for its cell source)
-- Set `SMOKE_TEST = False` in every script once Stage 0 has been
-  smoke-tested successfully
-
-## Running it
+These are git aliases for `tools/overleaf_sync.sh`. They are stored in your local git config, so
+on a fresh clone set them up once (the Overleaf remote needs your Overleaf git token):
 
 ```bash
-cd /data1/ANDREWID/daredevil_run/slurm
-bash submit_pipeline.sh
+git remote add overleaf https://git.overleaf.com/6a26c865b931c1d62bd86efe
+git fetch overleaf
+git config alias.overleaf-pull '!tools/overleaf_sync.sh pull'
+git config alias.overleaf-push '!f() { tools/overleaf_sync.sh push "$@"; }; f'
+git update-ref refs/sync/overleaf overleaf/main   # only if paper/ currently matches Overleaf
 ```
 
-## Monitoring
+**Redraw a figure.** See [`paper_figures/README.md`](paper_figures/README.md). It runs on a laptop,
+no GPU needed. Copy the output into `paper/figs/` under the name the paper uses.
+
+**Train models again.** Use `kaggle_retrain/train_baselines.ipynb` (Kaggle, one T4 GPU) for the
+models in the main comparison. Use `cluster_pipeline/` for the full ablation on the cluster.
+
+**Export labels for the dataset release.**
 
 ```bash
-sacct -u ANDREWID --format=JobID,JobName,State,Elapsed,Partition
-tail -f /data1/ANDREWID/daredevil_run/logs/<stage>-<jobid>.out
+python tools/export_release_labels.py          # writes release/labels.csv
 ```
 
-## What you get back, per stage
+## Data
 
-Because `nbconvert` can't execute notebooks here, a plain `python script.py`
-run on its own would only give you a `.out` text log — no notebook, no
-embedded figures. This pipeline works around that: every stage script
-captures its full run log AND every figure it produces, and at exit
-rebuilds a real notebook from scratch. Concretely, after a stage finishes
-you get:
+The raw recordings and homographies are on Kaggle (`janahussien90/rgb3thermals-full`,
+`janahussien90/homography-mats`, `janahussien90/label-cache`). The notebooks expect these attached
+as Kaggle inputs. The cluster pipeline downloads its own copy with
+`cluster_pipeline/download_dataset_from_kaggle.sh`.
 
-1. **`<stage>_executed.ipynb`** — written to both `scripts/` (next to the
-   original) and `daredevil_run/executed_notebooks/`. Contains every
-   original cell's source code, PLUS a "Run output" section at the end with
-   every figure embedded as a real inline image (no external file needed to
-   view them) and the complete captured stdout log as a text cell. Open it
-   in Jupyter and you see the whole run, figures included, exactly like a
-   normal executed notebook.
-2. **Standalone figure PNGs** in `daredevil_run/figures/` — every chart,
-   individually, for pulling into a paper/poster directly without opening a
-   notebook.
-3. **Saved model checkpoints** in `daredevil_run/saved_models/` — one `.pt`
-   per trained model (every Feature Fusion ablation variant included, not
-   just the winner).
-4. **Pickled result dicts** in `daredevil_run/results/` (predictions, F1
-   scores, params, latency) — what lets later stages rebuild comparison
-   tables without re-running anything.
-5. The normal Slurm `.out`/`.err` log in `daredevil_run/logs/`.
-
-## Time estimate, accounting for the 4-concurrent-job cap
-
-| Block | Time |
-|---|---|
-| Stage 0 (setup + labels + FF baseline) | ~2 hr |
-| Stage 1 + 2 + 3a-3e (7 jobs, only 4 run at once) | ~5-6 hr (was ~4 hr with unlimited concurrency) |
-| Stage 4 (best combo) | ~1.3 hr |
-| Stage 5 (shuffle + final) | ~1.2 hr |
-| **Total** | **~9.5-10.5 hours** |
-
-This comfortably fits inside the 48-hour-per-job cap (each individual stage
-is far under that), and total wall-clock across the whole pipeline stays
-well under a day even with the 4-concurrent-job ceiling.
-
-## Downloading results back to your machine
-
-From **Windows PowerShell**:
-
-```powershell
-mkdir C:\Users\<username>\daredevil_results
-
-scp -r ANDREWID@gpujobs.qatar.cmu.edu:/data1/ANDREWID/daredevil_run/executed_notebooks C:\Users\<username>\daredevil_results\
-scp -r ANDREWID@gpujobs.qatar.cmu.edu:/data1/ANDREWID/daredevil_run/figures C:\Users\<username>\daredevil_results\
-scp -r ANDREWID@gpujobs.qatar.cmu.edu:/data1/ANDREWID/daredevil_run/saved_models C:\Users\<username>\daredevil_results\
-scp -r ANDREWID@gpujobs.qatar.cmu.edu:/data1/ANDREWID/daredevil_run/logs C:\Users\<username>\daredevil_results\
-```
-
-## Re-running / resuming a failed stage
-
-Every cache (labels, split, per-variant results, model checkpoints) is keyed
-by name and persisted under `daredevil_run/`. `run_ff_variant` checks for an
-existing result + checkpoint before retraining anything. If a stage fails
-partway through, just resubmit that one `.sbatch` file — it picks up from
-whatever it already finished.
-
-## Recreating the paper's figures
-
-The models trained by this pipeline feed into the paper's figures, but
-figure generation itself is a separate, lightweight step that doesn't need
-the cluster. See [`paper_figures/README.md`](paper_figures/README.md) for a
-quickstart.
+Private files stay out of git: annotator labels, the human-validation answer key, and RGB samples
+(see `.gitignore`).
