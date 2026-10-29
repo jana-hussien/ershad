@@ -2,14 +2,12 @@
 as regenerate_fig3_fig4.py (muted palette, Times font, Type 42 PDF fonts,
 compressed height, framed legend below) -- but with no in-bar value labels.
 
-DATA NOTE: dataset_class_distribution_trainval_color.webp was handed over as
-a finished image with no backing script/data file in this repo (the closest
-match, plot_class_distribution() in figures-creation.ipynb, is the held-out/
-4-category version and produces a different chart). The counts below were
-reconstructed by measuring the original image's bar-segment boundaries in
-pixels, calibrated against its own y-axis gridlines (5000/10000/15000) --
-they are close estimates of the real values, not read from a logged source,
-per user's go-ahead to estimate from the image.
+DATA NOTE: counts are exact, computed from the label cache of the 3-seed
+retrain (kaggle_retrain/results/main_run/label_cache.pkl): every train+val
+timestep with a usable RGB frame (15,646), counted per camera direction. They
+replace the earlier pixel-measured estimates, whose figure files
+(dataset_class_distribution_trainval_*) are left untouched; this script now
+writes dataset_class_distribution_trainval_exact_*.
 """
 from pathlib import Path
 
@@ -23,31 +21,34 @@ OUT_DIR = Path(__file__).resolve().parent
 plt.rcParams.update({
     "font.family": "serif",
     "font.serif": ["Times New Roman", "Times", "DejaVu Serif"],
-    "font.size": 11,
-    "axes.labelsize": 11,
-    "xtick.labelsize": 10,
-    "ytick.labelsize": 10,
-    "legend.fontsize": 11,
+    # larger than the other figures: this one is printed at about half a column wide
+    "font.size": 15,
+    "axes.labelsize": 15,
+    "xtick.labelsize": 14,
+    "ytick.labelsize": 14,
+    "legend.fontsize": 14,
     "figure.dpi": 150,
     "axes.grid": False,
     "axes.linewidth": 0.8,
     "axes.edgecolor": "black",
     "pdf.fonttype": 42,
     "ps.fonttype": 42,
+    "hatch.linewidth": 0.6,
 })
 
 # This is a standalone figure (not paired tightly with another chart like
 # fig3/fig4 are), so it keeps a taller, roughly-square aspect ratio matching
 # the original reference chart instead of fig3/fig4's compressed strip shape.
 FIG_H = 2.9
-BAR_KW = dict(edgecolor="black", linewidth=1.0)
+BAR_KW = dict(edgecolor="#3A3A3A", linewidth=0.8)   # Fig. 1's stroke gray
 
 # Same muted Tol-derived class palette as fig3/fig4 (each hue blended 35%
 # toward mid-gray) so this chart reads as part of the same figure family.
+# Class colors: Fig. 1's badge hues (clear green / person red / object orange), muted for large bars.
 COLOR_CLASS = {
-    "Clear": ("#597A9B", ""),
-    "Person": ("#C86F7A", "///"),
-    "Other Object": ("#43854E", "..."),
+    "Clear": ("#6E995D", ""),
+    "Person": ("#B8554F", "///"),
+    "Other Object": ("#D2924D", "..."),
 }
 GRAY_CLASS = {
     "Clear": ("#FFFFFF", ""),
@@ -56,16 +57,11 @@ GRAY_CLASS = {
 }
 
 DIRECTIONS = ["Left", "Middle", "Right"]
-# Pixel-measured estimates -- see module docstring. Each direction's raw
-# measured total (15590 / 15499 / 15499) had ~0.6% pixel noise between them,
-# but the three directions share the same recorded frame count by
-# construction (synchronized cameras), so the class proportions below are
-# rescaled to a single common total of 15500 rather than three slightly
-# different ones.
+# Exact counts per direction (left, middle, right); each direction totals 15,646.
 COUNTS = {
-    "Clear":        [7144, 4481, 9382],
-    "Person":       [2137, 3712, 1008],
-    "Other Object": [6219, 7307, 5110],
+    "Clear":        [7138, 4529, 9431],
+    "Person":       [2421, 3815, 1133],
+    "Other Object": [6087, 7302, 5082],
 }
 
 
@@ -122,11 +118,11 @@ def draw_class_distribution(palette, suffix):
     # large empty band between the bars and the top of the chart.
     ax.set_ylim(0, 16200)
     _style_axes(ax)
-    ax.set_title("Class Distribution by Camera Direction", fontsize=13, pad=8)
+    ax.set_title("Class Distribution by Camera Direction", fontsize=16, pad=8)
     handles, labels = ax.get_legend_handles_labels()
-    _legend_below(ax, handles, labels, ncol=3, anchor_y=-0.20)
+    _legend_below(ax, handles, labels, ncol=3, anchor_y=-0.30)
     fig.subplots_adjust(left=0.24, right=0.96, top=0.90, bottom=0.22)
-    _save_fig(fig, f"dataset_class_distribution_trainval_{suffix}")
+    _save_fig(fig, f"dataset_class_distribution_trainval_exact_{suffix}")
 
 
 if __name__ == "__main__":

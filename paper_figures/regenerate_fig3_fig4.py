@@ -44,10 +44,11 @@ plt.rcParams.update({
     # (e.g. IEEE PDF eXpress) expect.
     "pdf.fonttype": 42,
     "ps.fonttype": 42,
+    "hatch.linewidth": 0.6,
 })
 
 FIG_H = 0.92
-BAR_KW = dict(edgecolor="black", linewidth=1.0)
+BAR_KW = dict(edgecolor="#3A3A3A", linewidth=0.8)   # Fig. 1's stroke gray
 LABEL_FMT = "{:.2f}"
 LABEL_FONTSIZE = 8.5
 LABEL_PAD = 0.014
@@ -59,10 +60,11 @@ COLOR_HATCHES = ["", "///", "...", "xxx", "---", "|||"]
 GRAY_SHADES = ["#FFFFFF", "#CCCCCC", "#888888", "#FFFFFF", "#AAAAAA", "#333333"]
 GRAY_HATCHES = ["", "///", "...", "xxx", "---", "|||"]
 
+# Class colors: Fig. 1's badge hues (clear green / person red / object orange), muted for large bars.
 COLOR_CLASS = {
-    "Clear": ("#597A9B", ""),
-    "Person": ("#C86F7A", "///"),
-    "Other Object": ("#43854E", "..."),
+    "Clear": ("#6E995D", ""),
+    "Person": ("#B8554F", "///"),
+    "Other Object": ("#D2924D", "..."),
 }
 GRAY_CLASS = {
     "Clear": ("#FFFFFF", ""),
