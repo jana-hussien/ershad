@@ -1,0 +1,45 @@
+{
+ "bag": "door_02.bag",
+ "dataset": "m2dgr",
+ "duration_s": 127.276584693,
+ "samples": 508,
+ "thermal_hz": 4,
+ "thermal_size": [
+  32,
+  24
+ ],
+ "thermal_raw_dtype": "uint8",
+ "event_bin_s": 0.04,
+ "event_grid_start": 1628062054.671083,
+ "event_bins": 3170,
+ "event_shape": [
+  240,
+  320
+ ],
+ "event_binning_factor": 2,
+ "event_stats": {
+  "events_outside_samples": 37756,
+  "events": 202858859,
+  "saturated_pixels": 0
+ },
+ "yolo": "yolov8m.pt",
+ "label_conf": 0.25,
+ "rgb_offset_ms_median": 14.979839324951172,
+ "class_counts": {
+  "center/clear/far": 457,
+  "center/furniture/far": 7,
+  "center/other/far": 31,
+  "center/other/near": 1,
+  "center/person/far": 12,
+  "left/clear/far": 415,
+  "left/other/far": 28,
+  "left/person/far": 59,
+  "left/person/near": 6,
+  "right/clear/far": 404,
+  "right/furniture/far": 6,
+  "right/other/far": 49,
+  "right/other/near": 42,
+  "right/person/far": 5,
+  "right/person/near": 2
+ }
+}

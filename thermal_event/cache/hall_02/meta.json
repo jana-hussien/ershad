@@ -1,0 +1,45 @@
+{
+ "bag": "hall_02.bag",
+ "dataset": "m2dgr",
+ "duration_s": 128.70118862500001,
+ "samples": 514,
+ "thermal_hz": 4,
+ "thermal_size": [
+  32,
+  24
+ ],
+ "thermal_raw_dtype": "uint8",
+ "event_bin_s": 0.04,
+ "event_grid_start": 1628410193.696101,
+ "event_bins": 3208,
+ "event_shape": [
+  240,
+  320
+ ],
+ "event_binning_factor": 2,
+ "event_stats": {
+  "events_outside_samples": 433161,
+  "events": 542777215,
+  "saturated_pixels": 0
+ },
+ "yolo": "yolov8m.pt",
+ "label_conf": 0.25,
+ "rgb_offset_ms_median": 18.36574077606201,
+ "class_counts": {
+  "center/clear/far": 318,
+  "center/furniture/far": 39,
+  "center/other/far": 96,
+  "center/other/near": 2,
+  "center/person/far": 59,
+  "left/clear/far": 364,
+  "left/furniture/far": 20,
+  "left/other/far": 72,
+  "left/other/near": 4,
+  "left/person/far": 54,
+  "right/clear/far": 340,
+  "right/furniture/far": 40,
+  "right/other/far": 95,
+  "right/other/near": 5,
+  "right/person/far": 34
+ }
+}

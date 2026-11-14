@@ -1,0 +1,191 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1.8cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\hypersetup{colorlinks=true, urlcolor=blue!60!black, linkcolor=black}
+
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\renewcommand{\arraystretch}{1.3}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.5em}
+
+% bullet list inside a table cell
+\newenvironment{opts}
+  {\begin{minipage}[t]{\linewidth}\raggedright\begin{itemize}[nosep,leftmargin=0.9em,label=\textbullet]}
+  {\end{itemize}\vspace{3pt}\end{minipage}}
+
+% literature links
+\newcommand{\melcarne}{\href{https://www.eurecom.eu/en/publication/8539}{Melcarne}}
+\newcommand{\sltnet}{\href{https://arxiv.org/abs/2412.12843v3}{SLTNet}}
+\newcommand{\tevio}{\href{https://doi.org/10.1109/TIM.2025.3552392}{TEVIO}}
+\newcommand{\openglass}{\href{https://arxiv.org/abs/2606.07431v1}{OpenGlass}}
+\newcommand{\mcfnet}{\href{https://arxiv.org/abs/2508.10704}{MCFNet}}
+\newcommand{\msad}{\href{https://openaccess.thecvf.com/content/CVPR2021/html/Qi_Multi-Scale_Aligned_Distillation_for_Low-Resolution_Detection_CVPR_2021_paper.html}{MSAD}}
+\newcommand{\efinet}{\href{https://doi.org/10.1109/CVPRW53098.2021.00142}{EFI-Net}}
+\newcommand{\li}{\href{https://doi.org/10.1609/aaai.v39i17.34013}{Li}}
+\newcommand{\cafr}{\href{https://arxiv.org/abs/2407.12582}{CAFR}}
+\newcommand{\thermalgyro}{\href{https://arxiv.org/abs/2506.12536}{Thermal-Gyro}}
+\newcommand{\dagr}{\href{https://doi.org/10.1038/s41586-024-07409-w}{DAGR}}
+\newcommand{\ramnet}{\href{https://doi.org/10.1109/LRA.2021.3060707}{RAMNet}}
+\newcommand{\zhao}{\href{https://doi.org/10.1109/ICRA48891.2023.10160472}{Zhao}}
+\newcommand{\mitrokhin}{\href{https://arxiv.org/abs/1803.04523}{Mitrokhin}}
+\newcommand{\pedro}{\href{https://doi.org/10.1109/CVPRW59228.2023.00426}{PEDRo}}
+
+\title{DalilSENSE Experimental Plan}
+\begin{document}
+\maketitle
+
+\section*{Goal}
+Show whether fusing $32\times24$ thermal with events, inside the network, labels each zone
+(left / center / right) as clear, person, furniture or other better than the best single sensor,
+at wearable-level compute.
+
+\section*{Experiments}
+{\footnotesize
+\begin{tabularx}{\textwidth}{@{}L{0.6cm} L{3.1cm} Y L{2.2cm} L{2.4cm} L{1.0cm}@{}}
+\toprule
+\textbf{\#} & \textbf{Question} & \textbf{Compare} & \textbf{Keep fixed} & \textbf{Extra metrics} & \textbf{Owner} \\
+\midrule
+E1 & \textbf{Event representation:}\newline How to turn events into input: window length and form? &
+  \begin{opts}
+    \item Count frame over 40, 80, 120 or 250\,ms
+    \item Fixed number of events
+    \item Voxel grid (\melcarne, \sltnet)
+    \item Time surface (\tevio)
+    \item Polarity histogram (\openglass)
+  \end{opts} &
+  Events-only network & & \\
+\addlinespace
+E2 & \textbf{The resolution problem:}\newline How to join $32\times24$ thermal with $320\times320$ events? &
+  \begin{opts}
+    \item Shrink events at the input
+    \item Learned downsampling (\mcfnet)
+    \item Fuse where sizes match (\msad)
+    \item Common low-res grid (\efinet)
+  \end{opts} &
+  \begin{opts}
+    \item E1 input
+    \item Concat fusion
+  \end{opts} & MFLOPs & \\
+\addlinespace
+E3 & \textbf{Fusion method:}\newline Which fusion method (early, mid, late) gives the most gain for its compute? &
+  \begin{opts}
+    \item \textbf{Early:} stack inputs
+    \item \textbf{Mid:} concat, add, scalar gate (\melcarne), channel gate (\li), attention (\cafr)
+    \item \textbf{Late:} average, learned blend (\thermalgyro)
+  \end{opts} &
+  \begin{opts}
+    \item E1 input
+    \item E2 approach
+  \end{opts} &
+  F1 vs MFLOPs & \\
+\addlinespace
+E4 & \textbf{The frame-rate problem:}\newline One decision per thermal frame, or events updating between frames? &
+  \begin{opts}
+    \item Sync at 4\,Hz (now)
+    \item Thermal anchor, events fill gaps (\dagr)
+    \item Shared memory (\ramnet)
+    \item Event clock (\tevio)
+  \end{opts} &
+  Best E3 model &
+  \begin{opts}
+    \item Decisions per second
+    \item Latency
+  \end{opts} & \\
+\addlinespace
+E5 & \textbf{The ego-motion problem:}\newline Does removing the wearer's own motion help? &
+  \begin{opts}
+    \item No compensation
+    \item IMU de-rotation (\zhao)
+    \item Compensation from events (\mitrokhin)
+  \end{opts} &
+  Best E3 model &
+  \begin{opts}
+    \item Walking straight vs turning
+    \item Extra ms
+  \end{opts} & \\
+\addlinespace
+E6 & \textbf{Classical baseline:}\newline Does a classical fusion work as well? &
+  \begin{opts}
+    \item Corridor event density (our test on \pedro)
+    \item Hand-made features + logistic regression
+  \end{opts} &
+  E1 input & Cost & \\
+\addlinespace
+E7 & \textbf{Per-class results:}\newline Which classes gain: people, furniture or other objects? &
+  Best single-sensor vs best fused (no retraining) &
+  Trained models &
+  \begin{opts}
+    \item Per-class F1
+    \item Confusion matrix
+  \end{opts} & \\
+\addlinespace
+E8 & \textbf{Final comparison:}\newline \emph{Main:} does fusion beat the best single sensor at a reasonable cost? &
+  Best of E1--E6 vs all baselines &
+  5 seeds & All & \\
+\bottomrule
+\end{tabularx}
+}
+
+\textbf{Order:} E1 and E2 fix the inputs, E3 picks the fusion, E4 to E6 build on the best model, then E7 and E8 report.
+
+\section*{Baselines (every experiment)}
+{\small
+\begin{tabularx}{\textwidth}{@{}L{6cm} Y@{}}
+\toprule
+\textbf{Baseline} & \textbf{Why} \\
+\midrule
+
+Thermal only, events only (one small CNN per sensor) & Single-sensor models to beat (about 0.1M parameters each) \\
+Thermal only, double width & Rules out ``it's just a bigger model'' \\
+Late average (each sensor answers alone, then the answers are averaged) & Simplest fusion \\
+Oracle (trust whichever sensor is right) & The ceiling \\
+\bottomrule
+\end{tabularx}
+}
+
+\section*{Metrics (every experiment)}
+{\small
+\begin{tabularx}{\textwidth}{@{}L{6cm} Y@{}}
+\toprule
+\textbf{Metric} & \textbf{Why} \\
+\midrule
+\textbf{Per-zone macro F1 (main)} & Rare classes like furniture count equally \\
+\% of zones correct & Easy to read \\
+Per-class F1 & Which classes gain \\
+Missed obstacles (zone called clear when it isn't) & False negatives are dangerous for navigation \\
+Parameters, MFLOPs, CPU ms per update & Fits a wearable? \\
+\bottomrule
+\end{tabularx}
+}
+
+\section*{Setup (every experiment)}
+{\small
+\begin{tabularx}{\textwidth}{@{}L{3cm} Y@{}}
+\toprule
+\textbf{Item} & \textbf{Rule} \\
+\midrule
+Data & Our own wearable recordings: office, university, houses, supermarket; wearer always walking; RGB for labels only \\
+Labels & YOLO on RGB, plus a hand-checked sample \\
+Main split & Leave one place out; seen-place split secondary; no random frame splits \\
+Seeds & 3 while exploring, 5 for the final run \\
+Tuning & On a validation recording, never the test one \\
+Fairness & Same backbone, recipe and folds for every model \\
+``Better'' & Paired 95\% CI of the difference above zero \\
+\bottomrule
+\end{tabularx}
+}
+
+\section*{Open questions}
+\begin{itemize}
+  \item 
+\end{itemize}
+
+\end{document}

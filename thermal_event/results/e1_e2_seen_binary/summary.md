@@ -1,0 +1,27 @@
+# E1 / E2 results
+
+Recordings: door_02, room_01 (589 test samples in total). Task: free vs blocked. Split: seen places: 5 held-out time blocks per recording, 1 s gap. 2 seeds, 20 epochs, device mps.
+Still/moving split at the median gyro rate, 0.164 rad/s. Brackets: 95% bootstrap CI over test blocks.
+
+| Model | Motion | n | Per-zone macro F1 | Exact match | Hamming acc. |
+|---|---|---|---|---|---|
+| majority class (reference) | all | 589 | 0.295 [0.223, 0.348] | 0.139 [0.056, 0.248] | 0.417 [0.295, 0.532] |
+| majority class (reference) | still | 294 | 0.269 [0.170, 0.342] | 0.109 [0.031, 0.199] | 0.366 [0.215, 0.508] |
+| majority class (reference) | moving | 295 | 0.318 [0.241, 0.384] | 0.169 [0.041, 0.322] | 0.468 [0.332, 0.615] |
+| thermal | all | 589 | 0.723 [0.605, 0.786] | 0.406 [0.297, 0.502] | 0.729 [0.649, 0.793] |
+| thermal | still | 294 | 0.714 [0.587, 0.791] | 0.345 [0.224, 0.512] | 0.715 [0.623, 0.810] |
+| thermal | moving | 295 | 0.727 [0.563, 0.812] | 0.466 [0.319, 0.591] | 0.744 [0.641, 0.824] |
+| event | all | 589 | 0.714 [0.605, 0.782] | 0.427 [0.297, 0.555] | 0.716 [0.632, 0.796] |
+| event | still | 294 | 0.713 [0.596, 0.793] | 0.396 [0.242, 0.605] | 0.714 [0.629, 0.814] |
+| event | moving | 295 | 0.710 [0.566, 0.786] | 0.458 [0.291, 0.643] | 0.718 [0.600, 0.833] |
+| late blend (E2) | all | 589 | 0.733 [0.596, 0.810] | 0.448 [0.308, 0.585] | 0.737 [0.642, 0.822] |
+| late blend (E2) | still | 294 | 0.732 [0.584, 0.834] | 0.413 [0.247, 0.637] | 0.732 [0.628, 0.854] |
+| late blend (E2) | moving | 295 | 0.728 [0.577, 0.819] | 0.483 [0.296, 0.633] | 0.742 [0.614, 0.839] |
+
+| Model | Parameters | MFLOPs | CPU ms per update (1 thread) |
+|---|---|---|---|
+| thermal | 99,702 | 16.2 | 0.53 |
+| event | 99,846 | 143.8 | 4.12 |
+| late blend (E2) | 199,548 | 159.9 | 4.65 |
+
+Test-label distribution (all zones): free 965 (55%), blocked 802 (45%)

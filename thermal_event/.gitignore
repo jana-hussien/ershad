@@ -1,0 +1,4 @@
+# model weights and local environments (yolov8m.pt downloads itself through ultralytics)
+*.pt
+.venv/
+e0_*/
