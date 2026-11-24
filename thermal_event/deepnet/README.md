@@ -8,39 +8,51 @@
 | 3 | Access to the GitHub repo `jana-hussien/ershad` | ask Jana to add you as a collaborator |
 | 4 | A conda env on DeepNet (the course one is fine) | `ls /data1/$USER/.conda/envs` shows a folder. If empty, run the course's `setup_conda_env.sh` (Python 3.10) |
 | 5 | The M2DGR bags in **your** OneDrive | open the "Browse all rosbags" OneDrive link in the [M2DGR README](https://github.com/SJTU-ViSYS/M2DGR) → **Add shortcut to My files**. Your OneDrive must then show a folder called `sequences` |
-| 6 | rclone on your laptop (for the OneDrive login, once) | Mac: `brew install rclone`. Windows: download from [rclone.org/downloads](https://rclone.org/downloads/) |
-| 7 | ~150 GB free on `/data1` | `df -h /data1` |
+| 6 | ~150 GB free on `/data1` | `df -h /data1` |
 
 You do **not** need to edit any file: your Andrew ID, conda env and mcs-label (`sura`) are found
 automatically. (If your env or label is different, set them at the top of `config.sh`.)
 
+**The only things you type yourself** (everything else is copy-paste):
+- `<andrewid>` in the commands below: replace it with your Andrew ID, without the `< >`
+  (e.g. `ssh abc123@gpujobs.qatar.cmu.edu`).
+- The answers to the OneDrive questions in step 2 (listed in the table there).
+- Your CMU login in the browser, once, in step 2.
+
 ## Steps (copy-paste)
 
-**1. Log in and get the code**
+**1. Log in and get the code.** Log in with this exact command (the `-L 53682:...` part is needed for
+the OneDrive login in step 2):
 ```bash
-ssh <andrewid>@gpujobs.qatar.cmu.edu
+ssh -L 53682:localhost:53682 <andrewid>@gpujobs.qatar.cmu.edu
 git clone -b thermal-event-fusion https://github.com/jana-hussien/ershad.git
 cd ershad/thermal_event/deepnet
 bash setup.sh
 ```
 The first time, it stops with `no rclone remote 'od'`. That is expected: do step 2.
 
-**2. Connect your OneDrive (once).** On DeepNet run `~/bin/rclone config` and answer:
+**2. Connect your OneDrive (once).** In the same DeepNet window, run `~/bin/rclone config`. It asks
+questions one at a time; type the answer in the right column and press Enter:
 
-| It asks | You type |
+| It asks (the line ends with) | You type |
 |---|---|
 | `n/s/q>` | `n` |
 | `name>` | `od` |
 | `Storage>` | `onedrive` |
-| `client_id>` / `client_secret>` | Enter / Enter |
+| `client_id>` | (nothing, just Enter) |
+| `client_secret>` | (nothing, just Enter) |
 | `region>` | `1` (Microsoft Cloud Global) |
-| `Edit advanced config?` | `n` |
-| `Use web browser to automatically authenticate?` | `n` |
-| `config_token>` | on **your laptop** run `rclone authorize "onedrive"`, sign in with your CMU account in the browser, then copy the whole `{...}` text it prints and paste it here |
+| `Edit advanced config?` `y/n>` | `n` |
+| `Use web browser to automatically authenticate rclone with remote?` `y/n>` | `y` |
+| it prints a link `http://127.0.0.1:53682/auth?state=...` and waits | open that link in the browser **on your laptop**, sign in with your CMU account, wait for "Success" |
 | `config_type>` | `1` (OneDrive Personal or Business) |
-| `config_driveid>` | `1` (your OneDrive) |
-| `Is that okay?` / `Keep this "od" remote?` | `y` / `y` |
+| `config_driveid>` | the number next to `OneDrive` (usually `1`) |
+| `Is that okay?` `y/n>` | `y` |
+| `Keep this "od" remote?` `y/e/d>` | `y` |
 | `e/n/d/r/c/s/q>` | `q` |
+
+If the link says "can't connect", you logged in without `-L 53682:localhost:53682`: type `q`, log out,
+log in with the command from step 1, and run `~/bin/rclone config` again.
 
 Check it: `~/bin/rclone lsf od:sequences | head` lists files ending in `.bag`.
 
