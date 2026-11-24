@@ -215,6 +215,8 @@ class SplineConvLayer(nn.Module):
 
 def voxel_pool(x, pos, batch, ei, size):
     """AEGNN MaxPooling: voxel_grid over (x, y) + PyG max_pool. Max features, mean positions, merged edges."""
+    if pos.shape[0] == 0:   # a batch whose windows hold no events at all: nothing to pool (min() would fail)
+        return x, pos, batch, ei
     start = pos[:, :2].min(0).values
     cell = ((pos[:, :2] - start) / torch.tensor(size, device=pos.device)).floor().long()
     ncell = cell.max(0).values + 1

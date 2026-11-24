@@ -1,8 +1,7 @@
 #!/bin/bash
 # Run ONCE on the gpujobs login node, from this folder (thermal_event/deepnet in the repo):  bash setup.sh
 # Installs the extra packages into your conda env, installs rclone, copies the code and the 3 old
-# recordings' labels into $RUN, gets their E1 inputs from Kaggle if it can (else run_all.sh rebuilds them
-# from the bags), and checks everything.
+# recordings' labels into $RUN, and checks that every bag is in your OneDrive.
 set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
 source "$HERE/config.sh"
@@ -14,14 +13,14 @@ echo "Andrew ID: $ANDREWID   conda env: $ENV_NAME   mcs-label: $MCS_LABEL"
 mkdir -p "$RUN"/{code,cache,e1,bags,results,logs}
 cp "$SRC"/*.py "$RUN/code/"
 [ -f "$SRC/yolov8m.pt" ] && cp "$SRC/yolov8m.pt" "$RUN/code/"
-cp "$HERE"/*.sh "$HERE"/*.sbatch "$RUN/"
+cp "$HERE"/*.sh "$HERE"/*.sbatch "$RUN/"; cp -r "$HERE/keep" "$RUN/"
 for rec in $OLD; do
   [ -f "$RUN/cache/$rec/meta.json" ] || cp -r "$CACHE/$rec" "$RUN/cache/"
 done
 
 echo "== packages =="
 $PY -c "import torch" 2>/dev/null || $PIP install -q numpy torch torchvision --index-url https://download.pytorch.org/whl/cu121
-$PIP install -q rosbags ultralytics kaggle
+$PIP install -q rosbags ultralytics
 TV=$($PY -c "import torch; print(torch.__version__.split('+')[0])")
 CU=$($PY -c "import torch; print((torch.version.cuda or '').replace('.', ''))")
 echo "torch $TV, CUDA $CU"
@@ -40,17 +39,6 @@ if [ ! -f "$RUN/code/yolov8m.pt" ]; then
   (cd "$RUN/code" && $PY -c "from ultralytics import YOLO; YOLO('yolov8m.pt')" >/dev/null)
 fi
 echo "  yolov8m.pt: $([ -f "$RUN/code/yolov8m.pt" ] && echo OK || echo MISSING)"
-
-echo "== E1 inputs of the 3 old recordings (Kaggle, optional) =="
-KAGGLE=/data1/$ANDREWID/.conda/envs/$ENV_NAME/bin/kaggle
-for rec in $OLD; do
-  if [ ! -f "$RUN/e1/$rec/meta.json" ] && [ -f "$HOME/.kaggle/kaggle.json" ]; then
-    chmod 600 "$HOME/.kaggle/kaggle.json"
-    "$KAGGLE" datasets download "$KAGGLE_USER/dalilsense-e1-${rec//_/-}" -p "$RUN/e1/$rec" --unzip \
-      >/dev/null 2>&1 || rm -rf "$RUN/e1/$rec"
-  fi
-  if [ -f "$RUN/e1/$rec/meta.json" ]; then echo "  $rec: from Kaggle"; else echo "  $rec: will be rebuilt from its bag"; fi
-done
 
 echo "== rclone (OneDrive) =="
 if [ ! -x "$RCLONE" ]; then

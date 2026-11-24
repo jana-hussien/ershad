@@ -17,5 +17,6 @@ echo "$(date) building $REC on $(hostname)"
 if [ ! -f "$RUN/cache/$REC/meta.json" ]; then
   $PY build_cache.py "$BAG" --out "$RUN/cache/$REC" --yolo "$RUN/code/yolov8m.pt"
 fi
+if [ -f "$E1_HOME/keep/$REC.json" ]; then cp "$E1_HOME/keep/$REC.json" "$RUN/cache/$REC/keep.json"; fi   # indoor part only
 $PY build_e1_cache.py "$BAG" --cache "$RUN/cache/$REC" --out "$RUN/e1/$REC" --every "$EVERY"
 echo "$(date) BUILD OK $REC"

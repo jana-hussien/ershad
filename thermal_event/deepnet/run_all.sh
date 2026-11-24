@@ -35,7 +35,7 @@ build() {  # download one bag (at most MAX_BAGS on disk) and submit its build jo
   BUILDS+=("$LAST"); echo "$(date) $rec: $(du -h "$bag" | cut -f1) downloaded, build job $LAST"
 }
 
-# the 3 old recordings first: the smoke test uses them (no-op for those that came from Kaggle)
+# the 3 old recordings first: the smoke test uses them
 for rec in $OLD; do build "$rec"; [ -n "$LAST" ] && OLD_BUILDS+=("$LAST"); done
 SDEP=(); if [ ${#OLD_BUILDS[@]} -gt 0 ]; then SDEP=(--dependency="afterok:$(IFS=:; echo "${OLD_BUILDS[*]}")"); fi
 NAME=smoke MODELS=all SMOKE=1

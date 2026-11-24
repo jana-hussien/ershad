@@ -6,7 +6,7 @@
 #SBATCH --partition=gpu2
 #SBATCH --gres=gpu:nvidia_h200_2g.35gb:1
 #SBATCH --nodelist=deepnet2
-#SBATCH --time=36:00:00
+#SBATCH --time=47:00:00
 #SBATCH --mem=64G
 set -euo pipefail
 source "$E1_HOME/config.sh"

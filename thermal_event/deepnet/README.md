@@ -1,4 +1,4 @@
-# E1 on DeepNet: all models, 13 indoor recordings, 1 run each
+# E1 on DeepNet: all models, 14 indoor recordings, 1 run each
 
 ## Before you start: what you need
 | # | What | How to check / get it |
@@ -62,7 +62,7 @@ To look at it again: `tmux attach -t e1`.
 squeue -u $USER                                  # your running / waiting jobs
 tail /data1/$USER/e1_run/logs/smoke-*.out        # after a few hours: should say "SMOKE TEST PASSED"
 ```
-The whole run takes about 1-2 days.
+The whole run takes about 2-3 days.
 
 **6. Results:** send Jana the folder `/data1/$USER/e1_run/results/e1_all/` (`summary.md` and the csv
 files). From your laptop:
@@ -82,11 +82,11 @@ scp -r <andrewid>@gpujobs.qatar.cmu.edu:/data1/<andrewid>/e1_run/results/e1_all 
 |---|---|---|---|
 | `setup.sh` | login node, once | packages, rclone, code, labels of the 3 old recordings | ~15 min |
 | `run_all.sh` | login node, in tmux | downloads the bags one by one (≤3 on disk), submits a build job per bag, then training and merge | ~1-8 h of downloads |
-| `build_<rec>` (13) | GPU | labels (YOLO), thermal, event bins, E1 inputs; deletes the bag | ~1 h each |
+| `build_<rec>` (14) | GPU | labels (YOLO), thermal, event bins, E1 inputs; deletes the bag | ~1 h each |
 | `smoke` | GPU | every model, 24 samples, 1 epoch, after the 3 old recordings are built | ~20 min |
-| `train_<group>` (5) | GPU | after smoke + all builds succeed | ~3-6 h each, 4 at a time |
+| `train_<group>` (5) | GPU | after smoke + all builds succeed | ~6-24 h each, 4 at a time |
 | `merge` | GPU | one `summary.md` with all models | ~1 h |
 
-Data: M2DGR recordings indoors with normal light: room ×3, hall ×5, lift ×4, door_02 (door_01 is left
-out: it goes outdoor → indoor → outdoor). 2 samples per second. The test holds out one place type at a
+Data: M2DGR recordings indoors with normal light: room ×3, hall ×5, lift ×4, door ×2 (only the
+indoor part of the two door recordings: door_01 62-360 s, door_02 from 52 s). 4 samples per second (every frame). The test holds out one place type at a
 time (room / hall / door / lift). One training run per model.
