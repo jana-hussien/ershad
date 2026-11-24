@@ -2,3 +2,4 @@
 *.pt
 .venv/
 e0_*/
+e1_cache/

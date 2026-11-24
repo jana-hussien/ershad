@@ -147,6 +147,12 @@ def folds(recs, split="recording"):
     if split == "blocks":
         yield from block_folds(recs)
         return
+    if split == "place":  # recordings of the same place (hall_01 ... hall_05) are tested together
+        place = [r["name"].split("_")[0] for r in recs]
+        for p in sorted(set(place)):
+            train = [(k, i) for k, r in enumerate(recs) if place[k] != p for i in range(len(r["y"]))]
+            yield p, train, [(k, i) for k, r in enumerate(recs) if place[k] == p for i in range(len(r["y"]))]
+        return
     if len(recs) > 1:
         for k, rec in enumerate(recs):
             train = [(r, i) for r in range(len(recs)) if r != k for i in range(len(recs[r]["y"]))]
