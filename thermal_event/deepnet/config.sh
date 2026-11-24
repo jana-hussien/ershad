@@ -24,7 +24,8 @@ MAX_BAGS=3                                        # bags on disk at once (larges
 # training jobs: each trains its models on all 14 recordings, 1 run, holding out one place type at a time.
 # Grouped so the four jobs that run at once take similar time (estimated from last week's run).
 TRAIN_GROUPS=(  # (not GROUPS: that name is built into bash)
-  "images:count_40,count_80,count_120,count_240,count_40_raw,stacked_6x40,stacked_rvt_10x5,voxel_6,voxel5_norm,time_surface,time_surface_tau25,time_surface_tau100,time_surface_zubic,time_surface_tevio,fixed_n_27k,fixed_n_50k,fixed_n_200k,fixed_n_800k,thermal,thermal_x2,thermal+stacked_cnn"
+  "images_a:count_40,count_80,count_120,count_240,count_40_raw,stacked_6x40,stacked_rvt_10x5,voxel_6,voxel5_norm,thermal,thermal_x2"
+  "images_b:time_surface,time_surface_tau25,time_surface_tau100,time_surface_zubic,time_surface_tevio,fixed_n_27k,fixed_n_50k,fixed_n_200k,fixed_n_800k,thermal+stacked_cnn"
   "spiking_a:snn_12x20,snn_voxel5"
   "spiking_b:thermal+snn,graph"
   "aegnn:aegnn"

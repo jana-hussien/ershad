@@ -84,7 +84,7 @@ scp -r <andrewid>@gpujobs.qatar.cmu.edu:/data1/<andrewid>/e1_run/results/e1_all 
 | `run_all.sh` | login node, in tmux | downloads the bags one by one (≤3 on disk), submits a build job per bag, then training and merge | ~1-8 h of downloads |
 | `build_<rec>` (14) | GPU | labels (YOLO), thermal, event bins, E1 inputs; deletes the bag | ~1 h each |
 | `smoke` | GPU | every model, 24 samples, 1 epoch, after the 3 old recordings are built | ~20 min |
-| `train_<group>` (5) | GPU | after smoke + all builds succeed | ~6-24 h each, 4 at a time |
+| `train_<group>` (6) | GPU | after smoke + all builds succeed: images ×2 (~10 models each), spiking ×2, AEGNN, EventMG-style | ~6-15 h each, 4 at a time |
 | `merge` | GPU | one `summary.md` with all models | ~1 h |
 
 Data: M2DGR recordings indoors with normal light: room ×3, hall ×5, lift ×4, door ×2 (only the
