@@ -44,7 +44,7 @@ questions one at a time; type the answer in the right column and press Enter:
 | `region>` | `1` (Microsoft Cloud Global) |
 | `Edit advanced config?` `y/n>` | `n` |
 | `Use web browser to automatically authenticate rclone with remote?` `y/n>` | `y` |
-| it prints a link `http://127.0.0.1:53682/auth?state=...` and waits | open that link in the browser **on your laptop**, sign in with your CMU account, wait for "Success" |
+| it prints a link `http://127.0.0.1:53682/auth?state=...` and waits | open that link in the browser **on your laptop**, sign in with **the same Microsoft account you used for the shortcut** (row 5 of "Before you start"), wait for "Success" |
 | `config_type>` | `1` (OneDrive Personal or Business) |
 | `config_driveid>` | the number next to `OneDrive` (usually `1`) |
 | `Is that okay?` `y/n>` | `y` |
