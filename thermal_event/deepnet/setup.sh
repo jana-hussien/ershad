@@ -8,7 +8,8 @@ HERE="$(cd "$(dirname "$0")" && pwd)"
 source "$HERE/config.sh"
 SRC="$HERE/code"; [ -d "$SRC" ] || SRC="$HERE/.."          # bundle layout or repo layout
 CACHE="$HERE/cache"; [ -d "$CACHE" ] || CACHE="$HERE/../cache"
-[ -x "$PY" ] || { echo "no python at $PY: set ENV_NAME in config.sh to your conda env"; exit 1; }
+[ -x "$PY" ] || { echo "no conda env found in /data1/$ANDREWID/.conda/envs: create one first (README, 'Before you start')"; exit 1; }
+echo "Andrew ID: $ANDREWID   conda env: $ENV_NAME   mcs-label: $MCS_LABEL"
 
 mkdir -p "$RUN"/{code,cache,e1,bags,results,logs}
 cp "$SRC"/*.py "$RUN/code/"
@@ -19,6 +20,7 @@ for rec in $OLD; do
 done
 
 echo "== packages =="
+$PY -c "import torch" 2>/dev/null || $PIP install -q numpy torch torchvision --index-url https://download.pytorch.org/whl/cu121
 $PIP install -q rosbags ultralytics kaggle
 TV=$($PY -c "import torch; print(torch.__version__.split('+')[0])")
 CU=$($PY -c "import torch; print((torch.version.cuda or '').replace('.', ''))")

@@ -1,8 +1,12 @@
 # Settings for running E1 on CMU-Q's DeepNet. Every script here reads this file.
-# EDIT MCS_LABEL and ENV_NAME if they are not yours (ANDREWID is your login name on the cluster).
+# Nothing to edit normally: the Andrew ID is your cluster login, and the conda env is the first one found
+# in /data1/<andrewid>/.conda/envs. Set ENV_NAME / MCS_LABEL here only to override them.
 ANDREWID=${ANDREWID:-$USER}
-MCS_LABEL=sura                                    # your group's --mcs-label
-ENV_NAME=daredevil                                # your conda env in /data1/$ANDREWID/.conda/envs
+MCS_LABEL=${MCS_LABEL:-sura}                      # the course's --mcs-label
+if [ -z "${ENV_NAME:-}" ]; then
+  for e in /data1/$ANDREWID/.conda/envs/*/bin/python; do [ -x "$e" ] && { ENV_NAME=$(basename "$(dirname "$(dirname "$e")")"); break; }; done
+fi
+ENV_NAME=${ENV_NAME:-NONE}
 
 RUN=/data1/$ANDREWID/e1_run                       # everything lives here: code, data, results, logs
 PY=/data1/$ANDREWID/.conda/envs/$ENV_NAME/bin/python

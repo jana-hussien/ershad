@@ -1,58 +1,92 @@
 # E1 on DeepNet: all models, 13 indoor recordings, 1 run each
 
-Runs every E1 model (27, including AEGNN and EventMG-style) on all M2DGR recordings that are indoors
-with normal light: room ×3, hall ×5, lift ×4, door ×1 (door_01 is left out: it goes outdoor → indoor →
-outdoor). 2 samples per second. The test holds out one **place type** at a time (room / hall / door /
-lift), so every score is on a kind of place the model never saw in training. One training run per model.
+## Before you start: what you need
+| # | What | How to check / get it |
+|---|---|---|
+| 1 | CMU-Q Andrew ID that can run DeepNet jobs | `srun -p gpu2 --mcs-label=sura --time=2 --gres=gpu:nvidia_h200_1g.18gb:1 hostname` prints `deepnet2` |
+| 2 | CMU VPN (only when off campus) | `ssh <andrewid>@gpujobs.qatar.cmu.edu` works |
+| 3 | Access to the GitHub repo `jana-hussien/ershad` | ask Jana to add you as a collaborator |
+| 4 | A conda env on DeepNet (the course one is fine) | `ls /data1/$USER/.conda/envs` shows a folder. If empty, run the course's `setup_conda_env.sh` (Python 3.10) |
+| 5 | The M2DGR bags in **your** OneDrive | open the "Browse all rosbags" OneDrive link in the [M2DGR README](https://github.com/SJTU-ViSYS/M2DGR) → **Add shortcut to My files**. Your OneDrive must then show a folder called `sequences` |
+| 6 | rclone on your laptop (for the OneDrive login, once) | Mac: `brew install rclone`. Windows: download from [rclone.org/downloads](https://rclone.org/downloads/) |
+| 7 | ~150 GB free on `/data1` | `df -h /data1` |
 
-## Steps
+You do **not** need to edit any file: your Andrew ID, conda env and mcs-label (`sura`) are found
+automatically. (If your env or label is different, set them at the top of `config.sh`.)
 
-**1. Get the bags into your OneDrive.** Open the M2DGR "Browse all rosbags" OneDrive link (M2DGR GitHub
-README), and use **Add shortcut to My files** on the folder. It must show up as `sequences/` in My files.
+## Steps (copy-paste)
 
-**2. On DeepNet** (`ssh <andrewid>@gpujobs.qatar.cmu.edu`, CMU VPN off campus):
+**1. Log in and get the code**
 ```bash
+ssh <andrewid>@gpujobs.qatar.cmu.edu
 git clone -b thermal-event-fusion https://github.com/jana-hussien/ershad.git
 cd ershad/thermal_event/deepnet
-nano config.sh             # set MCS_LABEL and ENV_NAME (your conda env in /data1/<andrewid>/.conda/envs)
-bash setup.sh              # stops at the rclone step the first time if there is no OneDrive login yet
+bash setup.sh
 ```
-OneDrive login, once: `~/bin/rclone config` → `n` (new) → name `od` → storage `onedrive` → Enter
-through the rest. When it asks "Use web browser to automatically authenticate?", answer `n` and
-follow what it prints (run `rclone authorize "onedrive"` on your laptop and paste back the result).
-Choose "OneDrive Personal or Business". Check that `~/bin/rclone lsf od:sequences | head` lists `.bag` files.
-Then run `bash setup.sh` again until it prints `SETUP DONE`.
+The first time, it stops with `no rclone remote 'od'`. That is expected: do step 2.
 
-**3. Start it** (keeps going after you log out):
+**2. Connect your OneDrive (once).** On DeepNet run `~/bin/rclone config` and answer:
+
+| It asks | You type |
+|---|---|
+| `n/s/q>` | `n` |
+| `name>` | `od` |
+| `Storage>` | `onedrive` |
+| `client_id>` / `client_secret>` | Enter / Enter |
+| `region>` | `1` (Microsoft Cloud Global) |
+| `Edit advanced config?` | `n` |
+| `Use web browser to automatically authenticate?` | `n` |
+| `config_token>` | on **your laptop** run `rclone authorize "onedrive"`, sign in with your CMU account in the browser, then copy the whole `{...}` text it prints and paste it here |
+| `config_type>` | `1` (OneDrive Personal or Business) |
+| `config_driveid>` | `1` (your OneDrive) |
+| `Is that okay?` / `Keep this "od" remote?` | `y` / `y` |
+| `e/n/d/r/c/s/q>` | `q` |
+
+Check it: `~/bin/rclone lsf od:sequences | head` lists files ending in `.bag`.
+
+**3. Finish setup**
+```bash
+bash setup.sh          # run again; it ends with "SETUP DONE"
+```
+
+**4. Start the run** (keeps going after you log out)
 ```bash
 tmux new -s e1
 bash /data1/$USER/e1_run/run_all.sh
 ```
-Detach with `Ctrl-b d`. Come back with `tmux attach -t e1`.
+Wait until it prints `downloading ...`, then press `Ctrl-b` then `d` to detach. You can log out.
+To look at it again: `tmux attach -t e1`.
 
-**4. Watch it:**
+**5. Check on it**
 ```bash
-squeue -u $USER                                  # running / waiting jobs
-tail /data1/$USER/e1_run/logs/smoke-*.out        # should say "SMOKE TEST PASSED"
-ls /data1/$USER/e1_run/logs                      # one .out/.err per job
+squeue -u $USER                                  # your running / waiting jobs
+tail /data1/$USER/e1_run/logs/smoke-*.out        # after a few hours: should say "SMOKE TEST PASSED"
+```
+The whole run takes about 1-2 days.
+
+**6. Results:** send Jana the folder `/data1/$USER/e1_run/results/e1_all/` (`summary.md` and the csv
+files). From your laptop:
+```bash
+scp -r <andrewid>@gpujobs.qatar.cmu.edu:/data1/<andrewid>/e1_run/results/e1_all ./
 ```
 
-**5. Results:** `/data1/$USER/e1_run/results/e1_all/summary.md` (plus the csv files in that folder).
+## If something fails
+- Send Jana the `.out` and `.err` files of the failed job from `/data1/$USER/e1_run/logs/`.
+- After fixing it: `scancel -u $USER`, then run `bash /data1/$USER/e1_run/run_all.sh` again in tmux.
+  Recordings already built and models already trained are skipped.
+- A warning in `setup.sh` that AEGNN or EventMG packages did not install is OK: those two models are
+  skipped, everything else runs.
 
-## What runs
+## What runs (for reference)
 | Step | Where | What | Time |
 |---|---|---|---|
 | `setup.sh` | login node, once | packages, rclone, code, labels of the 3 old recordings | ~15 min |
 | `run_all.sh` | login node, in tmux | downloads the bags one by one (≤3 on disk), submits a build job per bag, then training and merge | ~1-8 h of downloads |
-| `build_<rec>` (≤13) | GPU | labels (YOLO), thermal, event bins, E1 inputs; deletes the bag | ~1 h each |
+| `build_<rec>` (13) | GPU | labels (YOLO), thermal, event bins, E1 inputs; deletes the bag | ~1 h each |
 | `smoke` | GPU | every model, 24 samples, 1 epoch, after the 3 old recordings are built | ~20 min |
 | `train_<group>` (5) | GPU | after smoke + all builds succeed | ~3-6 h each, 4 at a time |
 | `merge` | GPU | one `summary.md` with all models | ~1 h |
 
-## If something fails
-- Fix the cause and run `bash /data1/$USER/e1_run/run_all.sh` again: built recordings and finished
-  training runs are skipped.
-- A failed smoke test or build cancels the training jobs (they show `DependencyNeverSatisfied` in
-  `squeue`); cancel them with `scancel -u $USER` before running again.
-- If AEGNN's or EventMG's packages don't install, `setup.sh` warns and those two models are skipped.
-- Disk: ~140 GB at peak (3 bags) on `/data1`. Lower `MAX_BAGS` in `config.sh` if that is too much.
+Data: M2DGR recordings indoors with normal light: room ×3, hall ×5, lift ×4, door_02 (door_01 is left
+out: it goes outdoor → indoor → outdoor). 2 samples per second. The test holds out one place type at a
+time (room / hall / door / lift). One training run per model.
