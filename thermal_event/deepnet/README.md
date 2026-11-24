@@ -7,7 +7,7 @@
 | 2 | CMU VPN (only when off campus) | `ssh <andrewid>@gpujobs.qatar.cmu.edu` works |
 | 3 | Access to the GitHub repo `jana-hussien/ershad` | ask Jana to add you as a collaborator |
 | 4 | A conda env on DeepNet (the course one is fine) | `ls /data1/$USER/.conda/envs` shows a folder. If empty, run the course's `setup_conda_env.sh` (Python 3.10) |
-| 5 | The M2DGR bags in **your** OneDrive | open the "Browse all rosbags" OneDrive link in the [M2DGR README](https://github.com/SJTU-ViSYS/M2DGR) → **Add shortcut to My files**. Your OneDrive must then show a folder called `sequences` |
+| 5 | The M2DGR bags in **your** OneDrive | open the [M2DGR OneDrive folder](https://1drv.ms/f/c/3e825cd7abd6dff7/IgCW90ge__sjSrGsFdArjCYMATtrrylG05J8lD1npWwmEAQ) → **Add shortcut to My files**. Your OneDrive must then show a folder called `sequences` |
 | 6 | ~150 GB free on `/data1` | `df -h /data1` |
 
 You do **not** need to edit any file: your Andrew ID, conda env and mcs-label (`sura`) are found
